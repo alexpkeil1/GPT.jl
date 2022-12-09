@@ -18,5 +18,7 @@
 [![Documentation](https://img.shields.io/badge/docs-master-blue.svg)](https://alexpkeil1.github.io/GPT3.jl/dev)
 -->
 
-Access the [GPT-3 API](https://beta.openai.com/docs/introduction/overview) from Julia. A line-for-line port from the R package [rgpt3](https://github.com/ben-aaron188/rgpt3) from [ben-aaron188](https://github.com/ben-aaron188)
+Access the [GPT-3 API](https://beta.openai.com/docs/introduction/overview) from Julia. A line-for-line port from the R package [rgpt3](https://github.com/ben-aaron188/rgpt3) from [ben-aaron188](https://github.com/ben-aaron188)[^1]
 
+
+[^1]: Kleinberg, B. (2022). rgpt3: Making requests from R to the GPT-3 API (Version 0.3) [Computer software]. https://doi.org/10.5281/zenodo.7327667
