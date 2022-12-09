@@ -1,7 +1,7 @@
-name = "GPT3Julia"
-uuid = "d65eb933-142e-424c-b873-46cc474275a5"
+name = "GPT3"
+uuid = "d65eb933-142e-424c-b873-46cc474275a4"
 authors = ["Alex Keil <alexpkeil1@users.noreply.github.com>"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
@@ -9,10 +9,10 @@ HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 
 [compat]
-julia = "^1.8.0" # [1.8.0, 2.0.0)
-DataFrames = "~1.4"   # [1.4.0, 1.5.0)
-HTTP = "~1.5"     
-JSON = "~0.21.0"     
+DataFrames = "~1.4"
+HTTP = "~1.5"
+JSON = "~0.21.0"
+julia = "^1.8.0"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"

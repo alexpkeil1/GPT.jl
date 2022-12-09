@@ -1,7 +1,8 @@
-# Retrieves text embeddings for character input from a vector from the GPT-3 API
+"""
+Retrieves text embeddings for character input from a vector from the GPT-3 API
 
-# travel_blog_data = gpt3_single_request(prompt_input = "Write a travel blog about a dog"s journey through the UK:", temperature = 0.8, n = 10, max_tokens = 200)[[1]]
-
+travel_blog_data = gpt3_single_request(prompt_input = "Write a travel blog about a dog"s journey through the UK:", temperature = 0.8, n = 10, max_tokens = 200)[1]
+"""
 function gpt3_embeddings(
   input_var, 
   id_var,

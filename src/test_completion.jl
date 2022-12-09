@@ -1,12 +1,12 @@
 """
-# Make a test request to the GPT-3 API
-#
-# @description
-# `gpt3_test_completion()` sends a basic [completion request](https://beta.openai.com/docs/api-reference/completions) to the Open AI GPT-3 API.
-# @param verbose (boolean) if TRUE prints the actual prompt and GPT-3 completion of the test request (default: TRUE).
-# @return A message of success or failure of the connection.
-# @examples
-# gpt3_test_completion()
+ Make a test request to the GPT-3 API
+
+ `gpt3_test_completion()` sends a basic [completion request](https://beta.openai.com/docs/api-reference/completions) to the Open AI GPT-3 API.
+ verbose: (boolean) if TRUE prints the actual prompt and GPT-3 completion of the test request (default: TRUE).
+ 
+ Returns a message of success or failure of the connection.
+
+ gpt3_test_completion()
 """
 function gpt3_test_completion(verbose=true){
   check_apikey_form()

@@ -6,6 +6,7 @@
 #  A confirmation message
 #  The easiest way to store you API key is in a `.txt` file with _only_ the API key in it (without quotation marks or other common string indicators). `gpt3_authenticate()` reads the single file you point it to and retrieves the content as authentication key for all requests.
 # # Starting a session:
+
  gpt3_authenticate(path = "./YOURPATH/access_key.txt")
 
 # # After you are finished:

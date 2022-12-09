@@ -1,4 +1,4 @@
-using GPT3Julia
+using GPT3
 using Test
 
 # write tests here

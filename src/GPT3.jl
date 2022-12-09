@@ -1,7 +1,7 @@
 """
-Placeholder for a short summary about GPT3Julia.
+Placeholder for a short summary about GPT3.
 """
-module GPT3Julia
+module GPT3
 
 ##############################################################################
 ##
