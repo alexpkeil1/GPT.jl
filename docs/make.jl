@@ -7,9 +7,9 @@ makedocs(
     format = Documenter.HTML(; prettyurls = get(ENV, "CI", nothing) == "true"),
     authors = "Alex Keil",
     sitename = "GPT3.jl",
-    pages = Any["index.md"]
+    pages = Any["index.md"],
     # strict = true,
-    # clean = true,
+     clean = true
     # checkdocs = :exports,
 )
 
