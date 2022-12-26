@@ -61,7 +61,7 @@ function gpt3_single_image_edit(
 
   request_base = HTTP.request(
     "POST",
-    url.generations,
+    url.edits,
     body=JSON.json(parameter_list),
     headers=headers
   );
