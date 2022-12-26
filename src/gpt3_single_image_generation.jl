@@ -43,7 +43,7 @@ function gpt3_single_image(
     "n" => n,
     "size" => size,
     "response_format" => response_format,
-    output_type = "complete",
+    "output_type" = output_type
   )
     
   deletenothingkeys!(parameter_list)    

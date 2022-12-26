@@ -49,7 +49,7 @@ function gpt3_single_image_edit(
     "image" => image,
     "mask" => mask,
     "response_format" => response_format,
-    output_type = "complete",
+    "output_type" = output_type
   )
     
   deletenothingkeys!(parameter_list)    
