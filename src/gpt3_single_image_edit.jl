@@ -62,7 +62,7 @@ function gpt3_single_image_edit(
   request_base = HTTP.request(
     "POST",
     url.edits,
-    body=JSON.json(parameter_list),
+    body=HTTP.Form(parameter_list),
     headers=headers
   );
   # request_base.status
