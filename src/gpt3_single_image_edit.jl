@@ -8,12 +8,13 @@
 
 *Parameters*
 
-   - `prompt_input`: character that contains the prompt to the GPT-3 request
-   - `n` numeric: (default: 1) specifying the number of completions per request (from the official API documentation:How many completions to generate for each prompt. **Note: Because this parameter generates many completions, it can quickly consume your token quota.** Use carefully and ensure that you have reasonable settings for max_tokens and stop._)
-   - `size`: string (default: "256x256") one of "256x256", "512x512", "1024x1024"
-   - `image`: string (default: nothing) image url (MUST BE PNG)
-   - `mask`: string (default: nothing) mask image url to show which parts should be edited (MUST BE PNG)
-   - `response_format`: string  (default: "url")   one of "url", "b64_json"
+   - `prompt_input`: character that contains the prompt to the GPT-3 request. (from the official API documentation: A text description of the desired image(s). The maximum length is 1000 characters.)
+   - `n` numeric: (default: 1) specifying the number of completions per request (from the official API documentation: How many completions to generate for each prompt. **Note: Because this parameter generates many completions, it can quickly consume your token quota.** Use carefully and ensure that you have reasonable settings for max_tokens and stop._)
+   - `size`: string (default: "256x256") one of "256x256", "512x512", "1024x1024" (from the official API documentation: The size of the generated images. Must be one of 256x256, 512x512, or 1024x1024)
+   - `image`: string (default: nothing) image url (MUST BE PNG) (from the official API documentation: The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is not provided, image must have transparency, which will be used as the mask.)
+   - `mask`: string (default: nothing) image url (MUST BE PNG) (from the official API documentation: An additional image whose fully transparent areas (e.g. where alpha is zero) indicate where image should be edited. Must be a valid PNG file, less than 4MB, and have the same dimensions as image.)
+   - `response_format`: string  (default: "url")   one of "url", "b64_json" (from the official API documentation: The format in which the generated images are returned. Must be one of url or b64_json.)
+   - `output_type`: character determining the output provided: "complete" (default), "image" or "meta"
 
  A tuple with two DataFrames (if `output_type` is the default "complete"): 
  
@@ -97,7 +98,7 @@ function gpt3_single_image_edit(
     output = (core_output, meta_output)
   elseif output_type == "meta"
     output = meta_output
-  elseif output_type == "text"
+  elseif output_type == "image"
     output = core_output
   end
   return(output)
