@@ -12,6 +12,8 @@ Access the [GPT-3 API](https://beta.openai.com/docs/introduction/overview) from 
 gpt3_authenticate
 gpt3_single_completion
 gpt3_single_embedding
+gpt3_single_image
+gpt3_single_image_edit
 gpt3_completions
 gpt3_embeddings
 GPT3
