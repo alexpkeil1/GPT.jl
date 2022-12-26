@@ -56,7 +56,7 @@ function gpt3_single_image_edit(
     
   headers = Dict(
     "Authorization" => "Bearer $api_key",
-    "Content-Type" => "application/json"
+    "Content-Type" => "multipart/form-data"
     )
 
   request_base = HTTP.request(
