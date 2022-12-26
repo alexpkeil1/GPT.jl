@@ -42,8 +42,7 @@ function gpt3_single_image(
     "prompt" => prompt_input,
     "n" => n,
     "size" => size,
-    "response_format" => response_format,
-    "output_type" = output_type
+    "response_format" => response_format
   )
     
   deletenothingkeys!(parameter_list)    
