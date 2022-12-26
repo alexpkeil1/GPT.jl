@@ -17,5 +17,6 @@ makedocs(
 # deploydocs() in the Documenter manual for more information.
 deploydocs(
     repo = "github.com/alexpkeil1/GPT3.jl.git",
-    push_preview = true
+    push_preview = true,
+    deploy_config = Documenter.GitHubActions("push", "github.com/alexpkeil1/GPT3.jl.git", "main")
 )
