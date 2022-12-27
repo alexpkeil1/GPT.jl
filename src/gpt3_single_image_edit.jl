@@ -47,7 +47,7 @@ function gpt3_single_image_edit(
     "prompt" => prompt_input,
     "n" => n,
     "size" => size,
-    "image" => image,
+    "image" => HTTP.Multipart(newFile, open(newFile, "r"), "image/png"),
     "mask" => mask,
     "response_format" => response_format
   )
@@ -61,10 +61,12 @@ function gpt3_single_image_edit(
 
   request_base = HTTP.request(
     "POST",
-    url.edits,
+    #url.edits,
+    "https://api.openai.com/v1/images/edits",
     body=HTTP.Form(parameter_list),
     headers=headers
   );
+  
   # request_base.status
   if request_base.status == 200
     request_content = JSON.parse(String(request_base.body))
