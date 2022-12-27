@@ -121,7 +121,6 @@ output_type = "complete"
         image=img,
         n = n,
         size = size, 
-        image = image,
         response_format = response_format,
         output_type = output_type
         )
