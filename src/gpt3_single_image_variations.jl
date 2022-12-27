@@ -111,6 +111,7 @@ function gpt3_single_image_variations(
   return(output)
 end
 
+#= 
 gpt3_single_image_variations(;
 image = nothing,
 n = 1,
@@ -126,3 +127,4 @@ output_type = "complete"
         output_type = output_type
         )
 ;
+ =#
