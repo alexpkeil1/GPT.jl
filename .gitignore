@@ -6,4 +6,4 @@
 /docs/build
 /docs/Manifest.toml
 /test/coverage/Manifest.toml
-_secret_key
+_secret_*
