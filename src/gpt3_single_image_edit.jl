@@ -58,7 +58,7 @@ function gpt3_single_image_edit(
   body = HTTP.Form(collect(parameter_list))
   headers = Dict(
     "Authorization" => "Bearer $api_key",
-    "Content-Type" => "application/json"
+    #"Content-Type" => "application/json"
     )
 
   

@@ -64,7 +64,7 @@ function gpt3_single_image_variations(img=nothing;
 
   headers = Dict(
     "Authorization" => "Bearer $api_key",
-    "Content-Type" => "application/json"
+    #"Content-Type" => "application/json"
     )
 
   request_base = HTTP.request(
