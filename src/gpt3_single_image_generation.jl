@@ -26,13 +26,11 @@
 
  _Examples_
  # First authenticate with your API key via `gpt3_authenticate("pathtokey")`
- # More here
- gpt3_authenticate("/path/to/secret/key")
  img1 = gpt3_single_image(
-    "A pine bookshelf mady by https://www.etsy.com/shop/VintageMillWerks with a natural finished solid back and darkly stained shelves",
-    size="1024x1024",
+    "a meme about the dangers of AI",
+       size="512x512",
     n=1
- )
+)
 
  
 """

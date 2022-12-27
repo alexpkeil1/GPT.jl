@@ -28,8 +28,22 @@
 
  _Examples_
  # First authenticate with your API key via `gpt3_authenticate("pathtokey")`
- # More here
- 
+img1 = gpt3_single_image(
+    "a meme about the dangers of AI",
+       size="512x512",
+    n=1
+)
+
+f1 = expanduser("~/temp/testimg_var1.png")
+f2 = expanduser("~/temp/testimg_var2.png")
+download(img1[1].gpt3[1], f1)
+
+img2 = gpt3_single_image_variations(
+        image = f1,
+        size="512x512"
+    )
+download(img2[1].gpt3[1], f2)
+
 """
 function gpt3_single_image_variations(;
   n = 1,
@@ -39,30 +53,28 @@ function gpt3_single_image_variations(;
   output_type = "complete"
 )
   check_api_exists()
-
   parameter_list = Dict(
     #"n" => n,
     "size" => size,
     "image" => open(image, "r"),
     "response_format" => response_format
   )
-    
+
   deletenothingkeys!(parameter_list)    
+
   body = HTTP.Form(collect(parameter_list))
+
   headers = Dict(
-    "Authorization" => "Bearer $api_key"
+    "Authorization" => "Bearer $api_key",
+    "Content-Type" => "application/json"
     )
 
-  
-    request_base = HTTP.request(
-      "POST",
-      #url.edits,
-      "https://api.openai.com/v1/images/variations",
-      headers=headers,
-      body=body
-    );
-
-
+  request_base = HTTP.request(
+        "POST",
+        url.variations,
+        headers=headers,
+        body=body
+      );
   
   # request_base.status
   if request_base.status == 200

@@ -9,10 +9,10 @@
 *Parameters*
 
    - `prompt_input`: character that contains the prompt to the GPT-3 request. (from the official API documentation: A text description of the desired image(s). The maximum length is 1000 characters.)
-   - `n` numeric: (default: 1) specifying the number of completions per request (from the official API documentation: How many completions to generate for each prompt. **Note: Because this parameter generates many completions, it can quickly consume your token quota.** Use carefully and ensure that you have reasonable settings for max_tokens and stop._)
+   - `n` numeric: (default: 1 - does nothing for now) specifying the number of completions per request (from the official API documentation: How many completions to generate for each prompt. **Note: Because this parameter generates many completions, it can quickly consume your token quota.** Use carefully and ensure that you have reasonable settings for max_tokens and stop._)
    - `size`: string (default: "256x256") one of "256x256", "512x512", "1024x1024" (from the official API documentation: The size of the generated images. Must be one of 256x256, 512x512, or 1024x1024)
-   - `image`: string (default: nothing) image url (MUST BE PNG) (from the official API documentation: The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is not provided, image must have transparency, which will be used as the mask.)
-   - `mask`: string (default: nothing) image url (MUST BE PNG) (from the official API documentation: An additional image whose fully transparent areas (e.g. where alpha is zero) indicate where image should be edited. Must be a valid PNG file, less than 4MB, and have the same dimensions as image.)
+   - `image`: string (default: nothing) image path (MUST BE PNG) (from the official API documentation: The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is not provided, image must have transparency, which will be used as the mask.)
+   - `mask`: string (default: nothing) image path (MUST BE PNG) (from the official API documentation: An additional image whose fully transparent areas (e.g. where alpha is zero) indicate where image should be edited. Must be a valid PNG file, less than 4MB, and have the same dimensions as image.)
    - `response_format`: string  (default: "url")   one of "url", "b64_json" (from the official API documentation: The format in which the generated images are returned. Must be one of url or b64_json.)
    - `output_type`: character determining the output provided: "complete" (default), "image" or "meta"
 
@@ -43,26 +43,28 @@ function gpt3_single_image_edit(
 )
   check_api_exists()
 
+  isnothing(image) ? throw("`image` must not be nothing") : nothing
+
   parameter_list = Dict(
     "prompt" => prompt_input,
-    #"n" => n,
+    #"n" => n, # broken until replacement for HTTP form is found
     "size" => size,
-    "image" => open(image, "r"),
-    "mask" => open(mask, "r"),
+    "image" => isnothing(image) ? image : open(image, "r"),
+    "mask" => isnothing(mask) ? mask : open(mask, "r"),
     "response_format" => response_format
   )
     
   deletenothingkeys!(parameter_list)    
   body = HTTP.Form(collect(parameter_list))
   headers = Dict(
-    "Authorization" => "Bearer $api_key"
+    "Authorization" => "Bearer $api_key",
+    "Content-Type" => "application/json"
     )
 
   
     request_base = HTTP.request(
       "POST",
-      #url.edits,
-      "https://api.openai.com/v1/images/edits",
+      url.edits,
       headers=headers,
       body=body
     );
