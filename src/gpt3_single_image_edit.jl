@@ -4,7 +4,7 @@
  @description
  `gpt3_single_image_edit()` sends a single [image edit request](https://beta.openai.com/docs/api-reference/images/create-edit) to the Open AI GPT-3 API.
  @details For a general guide on the completion requests, see [https://beta.openai.com/docs/guides/images/introduction](https://beta.openai.com/docs/guides/images/introduction). This function provides you with an R wrapper to send requests with the full range of request parameters as detailed on [https://beta.openai.com/docs/api-reference/images/create-edit](https://beta.openai.com/docs/api-reference/images/create-edit) and reproduced below.
-
+(from the official API documentation: The image edits endpoint allows you to edit and extend an image by uploading a mask. The transparent areas of the mask indicate where the image should be edited, and the prompt should describe the full new image, not just the erased area.)
 
 *Parameters*
 
@@ -45,27 +45,29 @@ function gpt3_single_image_edit(
 
   parameter_list = Dict(
     "prompt" => prompt_input,
-    "n" => n,
+    #"n" => n,
     "size" => size,
-    "image" => HTTP.Multipart(newFile, open(newFile, "r"), "image/png"),
-    "mask" => mask,
+    "image" => open(image, "r"),
+    "mask" => open(mask, "r"),
     "response_format" => response_format
   )
     
   deletenothingkeys!(parameter_list)    
-    
+  body = HTTP.Form(collect(parameter_list))
   headers = Dict(
-    "Authorization" => "Bearer $api_key",
-    "Content-Type" => "multipart/form-data"
+    "Authorization" => "Bearer $api_key"
     )
 
-  request_base = HTTP.request(
-    "POST",
-    #url.edits,
-    "https://api.openai.com/v1/images/edits",
-    body=HTTP.Form(parameter_list),
-    headers=headers
-  );
+  
+    request_base = HTTP.request(
+      "POST",
+      #url.edits,
+      "https://api.openai.com/v1/images/edits",
+      headers=headers,
+      body=body
+    );
+
+
   
   # request_base.status
   if request_base.status == 200
