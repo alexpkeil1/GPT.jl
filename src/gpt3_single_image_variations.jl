@@ -8,7 +8,6 @@
 
 *Parameters*
 
-   - `prompt_input`: character that contains the prompt to the GPT-3 request. (from the official API documentation: A text description of the desired image(s). The maximum length is 1000 characters.)
    - `n` numeric: (default: 1) specifying the number of completions per request (from the official API documentation: How many completions to generate for each prompt. **Note: Because this parameter generates many completions, it can quickly consume your token quota.** Use carefully and ensure that you have reasonable settings for max_tokens and stop._)
    - `size`: string (default: "256x256") one of "256x256", "512x512", "1024x1024" (from the official API documentation: The size of the generated images. Must be one of 256x256, 512x512, or 1024x1024)
    - `image`: string (default: nothing) image path (MUST BE PNG) (from the official API documentation: The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is not provided, image must have transparency, which will be used as the mask.)
@@ -44,11 +43,11 @@ img2 = gpt3_single_image_variations(
 download(img2[1].gpt3[1], f2)
 
 """
-function gpt3_single_image_variations(;
+function gpt3_single_image_variations(img=nothing;
   n = 1,
   size = "256x256", # "512x512", "1024x1024"
   response_format = "url", # "b64_json"
-  image = nothing,
+  image = img,
   output_type = "complete"
 )
   check_api_exists()
@@ -111,15 +110,15 @@ function gpt3_single_image_variations(;
   return(output)
 end
 
-gpt3_single_image_variations(;prompt_input="",
+gpt3_single_image_variations(;
+image = nothing,
 n = 1,
 size = "256x256", # "512x512", "1024x1024"
-image = nothing,
 response_format = "url", # "b64_json"
 output_type = "complete"
 ) = gpt3_single_image_variations(
-        prompt_input;
-        prompt_input=prompt_input,
+        img;
+        image=img,
         n = n,
         size = size, 
         image = image,
