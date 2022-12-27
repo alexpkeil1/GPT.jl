@@ -31,9 +31,7 @@
  # More here
  
 """
-function gpt3_single_image_variations(
-  p;
-  prompt_input=p,
+function gpt3_single_image_variations(;
   n = 1,
   size = "256x256", # "512x512", "1024x1024"
   response_format = "url", # "b64_json"
@@ -43,7 +41,6 @@ function gpt3_single_image_variations(
   check_api_exists()
 
   parameter_list = Dict(
-    "prompt" => prompt_input,
     #"n" => n,
     "size" => size,
     "image" => open(image, "r"),
@@ -75,13 +72,11 @@ function gpt3_single_image_variations(
   if n == 1
     core_output = DataFrame(
                    "n" => 1,
-                   "prompt" => prompt_input,
                    "gpt3" => request_content["data"][1]["url"]
                    )
   elseif n > 1
     core_output = DataFrame(
                    "n" => 1:n,
-                   "prompt" => fill(prompt_input, n),
                    "gpt3" => fill("", n)
                    )
     for i in 1:n
@@ -91,7 +86,6 @@ function gpt3_single_image_variations(
 
   meta_output = Dict(
     "request_created" => request_content["created"],
-    "param_prompt" => prompt_input,
     "param_size" => size,
     "param_response_format" => response_format
   )

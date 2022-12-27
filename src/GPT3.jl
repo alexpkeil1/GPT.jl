@@ -24,6 +24,7 @@ export  gpt3_single_embedding,
         gpt3_single_completion,
         gpt3_single_image,
         gpt3_single_image_edit,
+        gpt3_single_image_variations,
         gpt3_completions,
         gpt3_embeddings,
         gpt3_authenticate,
@@ -45,6 +46,7 @@ include("gpt3_single_completion.jl")
 include("gpt3_single_embedding.jl")
 include("gpt3_single_image_generation.jl")
 include("gpt3_single_image_edit.jl")
+include("gpt3_single_image_variations.jl")
 #include("test_completion.jl")
 include("utils.jl")
 
