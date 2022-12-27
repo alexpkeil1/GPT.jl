@@ -43,7 +43,8 @@ img2 = gpt3_single_image_variations(
 download(img2[1].gpt3[1], f2)
 
 """
-function gpt3_single_image_variations(img=nothing;
+function gpt3_single_image_variations(
+  img=nothing;
   n = 1,
   size = "256x256", # "512x512", "1024x1024"
   response_format = "url", # "b64_json"
@@ -117,8 +118,8 @@ size = "256x256", # "512x512", "1024x1024"
 response_format = "url", # "b64_json"
 output_type = "complete"
 ) = gpt3_single_image_variations(
-        img;
-        image=img,
+        image;
+        image=image,
         n = n,
         size = size, 
         response_format = response_format,
