@@ -10,7 +10,7 @@
 *Parameters*
 
    - `prompt_input`: character that contains the prompt to the GPT-3 request
-   - `model`: a character vector that indicates the [model](https://beta.openai.com/docs/models/gpt-3) to use; one of "text-davinci-003" (default), "text-davinci-002", "text-davinci-001", "text-curie-001", "text-babbage-001" or "text-ada-001"
+   - `model`: a character vector that indicates the [model](https://beta.openai.com/docs/models/gpt-3) to use; one of "gpt-3.5-turbo" (default), "text-davinci-003",  "text-davinci-002", "text-davinci-001", "text-curie-001", "text-babbage-001" or "text-ada-001"
    - `output_type`: character determining the output provided: "complete" (default), "text" or "meta"
    - `suffix`: character (default: NULL) (from the official API documentation:The suffix that comes after a completion of inserted text_)
    - `max_tokens`: numeric (default: 100) indicating the maximum number of tokens that the completion request should return (from the official API documentation:The maximum number of tokens to generate in the completion. The token count of your prompt plus max_tokens cannot exceed the model"s context length. Most models have a context length of 2048 tokens (except for the newest models, which support 4096)_)
@@ -69,7 +69,7 @@ gpt3_single_completion(prompt_input = "Write a research idea about using text da
 function gpt3_single_completion(
   p;
   prompt_input=p,
-  model = "text-davinci-003",
+  model = "gpt-3.5-turbo",
   output_type = "complete",
   suffix = nothing,
   max_tokens = 100,
@@ -111,7 +111,9 @@ function gpt3_single_completion(
     #
     "echo" => true
     )
-    
+  
+  chatmodels = ["gpt-3.5-turbo"]
+  thisurl = any(model .== chatmodels) ?  url.chats : url.completions
   deletenothingkeys!(parameter_list)    
     
   headers = Dict(
@@ -121,7 +123,7 @@ function gpt3_single_completion(
 
   request_base = HTTP.request(
     "POST",
-    url.completions,
+    thisurl,
     body=JSON.json(parameter_list),
     headers=headers
   );

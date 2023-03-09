@@ -8,7 +8,7 @@
 
  gpt3_test_completion()
 """
-function gpt3_test_completion(verbose=true){
+function gpt3_test_completion(verbose=true)
   check_apikey_form()
 
   test_prompt = "Write a story about R Studio: "
