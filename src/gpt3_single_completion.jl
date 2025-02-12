@@ -95,9 +95,18 @@ function gpt3_single_completion(
     message("You are running the deterministic model, so `n` was set to 1 to avoid unnecessary token quota usage.")
   end
 
+  messages = [
+    Dict("role" => "user", 
+    "content" => prompt_input),
+    Dict("role" => "developer", 
+    "content" => raw"You use the ChatGPT defaults")
+]
+
+  
+
   parameter_list = Dict(
     "model" => model,
-    "prompt" => prompt_input,
+    #"prompt" => prompt_input,
     "suffix" => suffix,
     "max_tokens" => max_tokens,
     "temperature" => temperature,
