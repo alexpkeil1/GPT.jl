@@ -85,10 +85,10 @@ function gpt3_single_completion(
   check_api_exists()
 
   #check for request issues with `n` and `best_of`
-  if best_of < n
-    best_of = n
-    message("To avoid an `invalid_request_error`, `best_of` was set to equal `n`")
-  end
+  #if best_of < n
+  #  best_of = n
+  #  message("To avoid an `invalid_request_error`, `best_of` was set to equal `n`")
+  #end
 
   if (temperature == 0) && (n > 1)
     n = 1
@@ -141,13 +141,12 @@ function gpt3_single_completion(
   if request_base.status == 200
     request_content = JSON.parse(String(request_base.body))
   end
-  return(request_content)
   
   if n == 1
     core_output = DataFrame(
                    "n" => 1,
                    "prompt" => prompt_input,
-                   "gpt3" => request_content["choices"][1]["text"]
+                   "gpt3" => request_content["choices"][1]["message"]["content"]
                    )
   elseif n > 1
     core_output = DataFrame(
