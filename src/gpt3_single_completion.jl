@@ -105,6 +105,7 @@ function gpt3_single_completion(
   
 
   parameter_list = Dict(
+    "messages" => messages,
     "model" => model,
     #"prompt" => prompt_input,
     "suffix" => suffix,
