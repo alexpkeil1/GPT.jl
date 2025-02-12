@@ -141,7 +141,8 @@ function gpt3_single_completion(
   if request_base.status == 200
     request_content = JSON.parse(String(request_base.body))
   end
-  #
+  return(request_content)
+  
   if n == 1
     core_output = DataFrame(
                    "n" => 1,
@@ -158,6 +159,7 @@ function gpt3_single_completion(
       core_output.gpt3[i] = request_content["choices"][i]["text"]
     end
   end
+  
 
   meta_output = Dict(
     "request_id" => request_content["id"],
