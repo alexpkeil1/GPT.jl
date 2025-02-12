@@ -6,7 +6,7 @@ travel_blog_data = gpt3_single_request(prompt_input = "Write a travel blog about
 function gpt3_embeddings(
   input_var, 
   id_var,
-  param_model = "text-similarity-ada-001"
+  param_model = "text-similarity-ada-002"
 )
   data_length = length(input_var)
   if isnothing(id_var)

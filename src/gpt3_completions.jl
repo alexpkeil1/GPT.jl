@@ -82,7 +82,7 @@ gpt3_completions(prompt_var = dt_prompts["prompts"]
 function gpt3_completions(prompt_var
                               , id_var
                               , param_output_type = "complete"
-                              , param_model = "gpt-3.5-turbo"
+                              , param_model = "gpt-4o-mini"
                               , param_suffix = NULL
                               , param_max_tokens = 100
                               , param_temperature = 0.9

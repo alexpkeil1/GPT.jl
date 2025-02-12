@@ -61,7 +61,7 @@ gpt3_single_completion(prompt_input = "Write a research idea about using text da
 
  ## The same example with a different GPT-3 model:
  gpt3_single_completion(prompt_input = "Finish this sentence:/n There is no easier way to learn Julia than"
-     , model = "text-babbage-001"
+     , model = "gpt-4o-mini"
      , temperature = 0.0
      , max_tokens = 50)
 
@@ -69,7 +69,7 @@ gpt3_single_completion(prompt_input = "Write a research idea about using text da
 function gpt3_single_completion(
   p;
   prompt_input=p,
-  model = "gpt-3.5-turbo",
+  model = "gpt-4o-mini",
   output_type = "complete",
   suffix = nothing,
   max_tokens = 100,
@@ -112,7 +112,7 @@ function gpt3_single_completion(
     "echo" => true
     )
   
-  chatmodels = ["gpt-3.5-turbo"]
+  chatmodels = ["gpt-4o-mini"]
   thisurl = any(model .== chatmodels) ?  url.chats : url.completions
   deletenothingkeys!(parameter_list)    
     
@@ -181,7 +181,7 @@ function gpt3_single_completion(
 end
 
 gpt3_single_completion(;prompt_input="",
-    model = "text-davinci-003",
+    model = "gpt-4o-mini",
     output_type = "complete",
     suffix = nothing,
     max_tokens = 100,

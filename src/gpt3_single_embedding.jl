@@ -27,11 +27,11 @@ These vectors can be used for downstream tasks such as (vector) similarity calcu
 
 ## Change the model:
  gpt3_single_embedding(input = sample_string
-     , model = "text-similarity-curie-001")
+     , model = "text-embedding-ada-002")
 """
 function gpt3_single_embedding(
   input,
-  model = "text-similarity-ada-001"
+  model = "text-embedding-ada-002"
 )
   check_api_exists()
    parameter_list = Dict(
