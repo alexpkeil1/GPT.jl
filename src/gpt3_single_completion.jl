@@ -117,9 +117,9 @@ function gpt3_single_completion(
     "stop" => stop,
     "presence_penalty" => presence_penalty,
     "frequency_penalty" => frequency_penalty,
-    "best_of" => best_of,
+    #"best_of" => best_of,
     #
-    "echo" => true
+    #"echo" => true
     )
   
   chatmodels = ["gpt-4o-mini"]
