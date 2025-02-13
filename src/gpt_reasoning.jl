@@ -113,7 +113,7 @@ function gpt_reasoning(
     elseif any(model .== ["o3-mini", "o3"])
         parameter_list = merge(
             parameter_list,
-            Dict("messages" = [
+            Dict("messages" => [
                 Dict("role" => "user", "content" => prompt_input),
                 #Dict("role" => "developer", "content" => devmessage),
             ]),
