@@ -62,7 +62,7 @@ function gptupload(file, purpose)
     "file" => file
   )
   request_base =
-  HTTP.request("POST", thisurl, body = JSON.json(parameter_list), headers = headers)
+  HTTP.request("POST", thisurl, form = JSON.json(parameter_list), headers = headers)
   if request_base.status == 200
     request_content = JSON.parse(String(request_base.body))
   end
