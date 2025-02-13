@@ -80,7 +80,7 @@ function gpt_reasoning(
     stop = nothing,
     presence_penalty = 0,
     frequency_penalty = 0,
-    verbose = true,
+    verbose = false,
 )
     check_api_exists()
     verbose ? println("Using $model") : true
@@ -116,7 +116,7 @@ function gpt_reasoning(
 
     thisurl = url.chats
     deletenothingkeys!(parameter_list)
-    println(parameter_list)
+    verbose ? println(parameter_list) : true
     headers =
         Dict("Authorization" => "Bearer $api_key", "Content-Type" => "application/json")
 
