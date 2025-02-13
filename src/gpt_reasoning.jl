@@ -96,7 +96,6 @@ function gpt_reasoning(
         "model" => model,
         "suffix" => suffix,
         "max_tokens" => max_tokens,
-        "max_completion_tokens" => max_completion_tokens,
         "temperature" => temperature,
         "top_p" => top_p,
         "n" => n,
@@ -113,7 +112,9 @@ function gpt_reasoning(
     elseif any(model .== ["o3-mini", "o3"])
         parameter_list = merge(
             parameter_list,
-            Dict("messages" => [
+            Dict(
+                "max_completion_tokens" => max_completion_tokens,
+                "messages" => [
                 Dict("role" => "user", "content" => prompt_input),
                 #Dict("role" => "developer", "content" => devmessage),
             ]),
