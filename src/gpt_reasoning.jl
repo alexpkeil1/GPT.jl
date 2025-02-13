@@ -69,9 +69,8 @@ function gpt_reasoning(
     p;
     prompt_input = p,
     model = "o1-mini", # "o1"
-    reasoning_effort="medium",
+    reasoning_effort = "medium",
     output_type = "complete",
-    devmessage = raw"You use the ChatGPT defaults",
     suffix = nothing,
     max_tokens = 100,
     max_completion_tokens = 25000, # recommended in API docs
@@ -93,18 +92,7 @@ function gpt_reasoning(
             "You are running the deterministic model, so `n` was set to 1 to avoid unnecessary token quota usage.",
         )
     end
-
-    messages = [
-        Dict("role" => "user", "content" => prompt_input),
-        #Dict("role" => "developer", "content" => devmessage),
-    ]
-
-
-
     parameter_list = Dict(
-        "messages" => messages,
-        "reasoning_effort" => reasoning_effort,
-        "prompt" => prompt_input, # seems like it shouldn't be necessary
         "model" => model,
         "suffix" => suffix,
         "max_tokens" => max_tokens,
@@ -117,9 +105,27 @@ function gpt_reasoning(
         "presence_penalty" => presence_penalty,
         "frequency_penalty" => frequency_penalty,
     )
+    if any(model .== ["o1-mini", "o1"])
+        parameter_list = merge(
+            parameter_list,
+            Dict("prompt" = prompt_input, "reasoning_effort" => reasoning_effort),
+        )
+    elseif any(model .== ["o3-mini", "o3"])
+        parameter_list = merge(
+            parameter_list,
+            Dict("messages" = [
+                Dict("role" => "user", "content" => prompt_input),
+                #Dict("role" => "developer", "content" => devmessage),
+            ]),
+        )
 
-    chatmodels = ["gpt-4o-mini"]
-    thisurl = any(model .== chatmodels) ? url.chats : url.completions
+    end
+
+
+
+
+
+    thisurl = url.completions
     deletenothingkeys!(parameter_list)
 
     headers =
@@ -209,10 +215,7 @@ gpt_reasoning(;
 );
 =#
 
-gpt_reasoning(;kwargs...
-) = gpt_reasoning(
-    prompt_input; kwargs...
-);
+gpt_reasoning(; kwargs...) = gpt_reasoning(prompt_input; kwargs...);
 
-reasongpt(;kwargs...) = gpt_reasoning(;kwargs...)
-reasongpt(p;kwargs...) = gpt_reasoning(p;kwargs...)
+reasongpt(; kwargs...) = gpt_reasoning(; kwargs...)
+reasongpt(p; kwargs...) = gpt_reasoning(p; kwargs...)
