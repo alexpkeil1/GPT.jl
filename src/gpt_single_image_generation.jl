@@ -95,18 +95,21 @@ function gpt_single_image(
     "request_created" => request_content["created"],
     "param_prompt" => prompt_input,
     "param_size" => size,
+    "param_quality" => quality,
     "param_response_format" => response_format
   )
 
   if output_type == "complete"
     fl= download(core_output.gpt[1])
-    run(`open -a Preview.app $fl`)
+    #run(`open -a Preview.app $fl`)
+    println("Image (png format) available at $fl")
     output = (core_output, meta_output)
   elseif output_type == "meta"
     output = meta_output
   elseif output_type == "image"
     fl= download(core_output.gpt[1])
-    run(`open -a Preview.app $fl`)
+    #run(`open -a Preview.app $fl`)
+    println("Image (png format) available at $fl")
     output = core_output
   end
 
