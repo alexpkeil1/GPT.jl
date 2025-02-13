@@ -56,11 +56,10 @@ end
 
 function gptupload(file, purpose)
   headers = ["Authorization" => "Bearer $api_key"]
-  #model = "text-davinci-003"
-  thisurl = url.file_upload;
+  thisurl = url.file_upload
   parameter_list = Dict(
-    :purpose=purpose,
-    :file=file
+    "purpose"=purpose,
+    "file"=file
   )
   request_base =
   HTTP.request("POST", thisurl, body = JSON.json(parameter_list), headers = headers)
