@@ -12,7 +12,7 @@
    - `model`: a character vector that indicates the [model](https://beta.openai.com/docs/models/gpt-3) to use; one of "gpt-3.5-turbo" (default), "text-davinci-003",  "text-davinci-002", "text-davinci-001", "text-curie-001", "text-babbage-001" or "text-ada-001"
    - `output_type`: character determining the output provided: "complete" (default), "text" or "meta"
    - `suffix`: character (default: NULL) (from the official API documentation:The suffix that comes after a completion of inserted text_)
-   - `max_tokens`: numeric (default: 100) indicating the maximum number of tokens that the completion request should return (from the official API documentation:The maximum number of tokens to generate in the completion. The token count of your prompt plus max_tokens cannot exceed the model"s context length. Most models have a context length of 2048 tokens (except for the newest models, which support 4096)_)
+   - `max_completion_tokens`: numeric (default: 25000) indicating the maximum number of tokens that the completion request should take
    - `temperature`: numeric (default: 0.9) specifying the sampling strategy of the possible completions (from the official API documentation:What sampling temperature to use. Higher values means the model will take more risks. Try 0.9 for more creative applications, and 0 (argmax sampling) for ones with a well-defined answer. We generally recommend altering this or top_p but not both._)
    - `top_p`: numeric (default: 1) specifying sampling strategy as an alternative to the temperature sampling (from the official API documentation:An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered. We generally recommend altering this or temperature but not both._)
    - `n` numeric: (default: 1) specifying the number of completions per request (from the official API documentation:How many completions to generate for each prompt. **Note: Because this parameter generates many completions, it can quickly consume your token quota.** Use carefully and ensure that you have reasonable settings for max_tokens and stop._)
@@ -149,7 +149,6 @@ function gpt_reasoning(
         "param_prompt" => prompt_input,
         "param_model" => model,
         "param_suffix" => suffix,
-        "param_max_tokens" => max_tokens,
         "param_temperature" => temperature,
         "param_top_p" => top_p,
         "param_n" => n,
