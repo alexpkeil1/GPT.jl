@@ -122,11 +122,7 @@ function gpt_reasoning(
 
     end
 
-
-
-
-
-    thisurl = url.completions
+    thisurl = url.chats
     deletenothingkeys!(parameter_list)
 
     headers =
