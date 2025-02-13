@@ -104,23 +104,17 @@ function gpt_reasoning(
         "presence_penalty" => presence_penalty,
         "frequency_penalty" => frequency_penalty,
     )
-    if any(model .== ["o1-mini", "o1"])
-        parameter_list = merge(
-            parameter_list,
-            Dict("prompt" => prompt_input, "reasoning_effort" => reasoning_effort),
-        )
-    elseif any(model .== ["o3-mini", "o3"])
-        parameter_list = merge(
-            parameter_list,
-            Dict(
-                "max_completion_tokens" => max_completion_tokens,
-                "messages" => [
+    parameter_list = merge(
+        parameter_list,
+        Dict(
+            "max_completion_tokens" => max_completion_tokens,
+            "messages" => [
                 Dict("role" => "user", "content" => prompt_input),
                 #Dict("role" => "developer", "content" => devmessage),
-            ]),
-        )
-
-    end
+            ],
+            "reasoning_effort" => reasoning_effort,
+        ),
+    )
 
     thisurl = url.chats
     deletenothingkeys!(parameter_list)
