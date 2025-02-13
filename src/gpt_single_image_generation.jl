@@ -45,7 +45,7 @@ function gpt_single_image(
   verbose=true
 )
   check_api_exists()
-  verbose ? println("Using $model"): true
+  verbose ? println("Using $model") : true
   parameter_list = Dict(
     "prompt" => prompt_input,
     "model" => model,
