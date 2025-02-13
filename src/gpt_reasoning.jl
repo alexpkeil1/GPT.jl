@@ -72,7 +72,6 @@ function gpt_reasoning(
     reasoning_effort = "medium",
     output_type = "complete",
     suffix = nothing,
-    max_tokens = 100,
     max_completion_tokens = 25000, # recommended in API docs
     temperature = 0.9,
     top_p = 1,
@@ -95,7 +94,6 @@ function gpt_reasoning(
     parameter_list = Dict(
         "model" => model,
         "suffix" => suffix,
-        "max_tokens" => max_tokens,
         "temperature" => temperature,
         "top_p" => top_p,
         "n" => n,
