@@ -69,11 +69,11 @@ function gpt_reasoning(
     p;
     prompt_input = p,
     model = "o1-mini", # "o1"
-    reasoning_effort = "medium",
+    reasoning_effort = "medium", # not yet implemented?
     output_type = "complete",
     suffix = nothing,
     max_completion_tokens = 25000, # recommended in API docs
-    temperature = 0.9,
+    temperature = 1,
     top_p = 1,
     n = 1,
     logprobs = nothing,
@@ -110,9 +110,14 @@ function gpt_reasoning(
                 Dict("role" => "user", "content" => prompt_input),
                 #Dict("role" => "developer", "content" => devmessage),
             ],
-            "reasoning_effort" => reasoning_effort,
         ),
     )
+    if (model[1:2]=="o3")
+        parameter_list = merge(
+            parameter_list,
+            "reasoning_effort" => reasoning_effort,
+        )
+    end
 
     thisurl = url.chats
     deletenothingkeys!(parameter_list)
