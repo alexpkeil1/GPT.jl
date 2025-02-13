@@ -210,3 +210,4 @@ gpt_single_completion(;kwargs...
 );
 
 chatgpt(;kwargs...) = gpt_single_completion(;kwargs...)
+chatgpt(p;kwargs...) = gpt_single_completion(p;kwargs...)
