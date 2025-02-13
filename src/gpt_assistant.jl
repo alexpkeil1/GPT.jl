@@ -65,12 +65,13 @@ gpt_assistant(prompt_input = "Write a research idea about using text data to und
      , max_tokens = 50)
 
 """
-function gpt_assistant(
+function create_gpt_assistant(
     p;
     prompt_input = p,
     model = "gpt-4o-mini",
     output_type = "complete",
-    devmessage = raw"You use the ChatGPT defaults",
+    instructions = raw"You use the ChatGPT defaults",
+    tools = ["code_interpreter"],
     suffix = nothing,
     max_tokens = 100,
     temperature = 0.9,
@@ -171,40 +172,9 @@ function gpt_assistant(
     end
     return (output)
 end
-#=
-gpt_assistant(;
-    prompt_input = "",
-    model = "gpt-4o-mini",
-    output_type = "complete",
-    suffix = nothing,
-    max_tokens = 100,
-    temperature = 0.9,
-    top_p = 1,
-    n = 1,
-    logprobs = nothing,
-    stop = nothing,
-    presence_penalty = 0,
-    frequency_penalty = 0,
-    verbose = true,
-) = gpt_assistant(
-    prompt_input;
-    prompt_input = prompt_input,
-    model = model,
-    output_type = output_type,
-    suffix = suffix,
-    max_tokens = max_tokens,
-    temperature = temperature,
-    top_p = top_p,
-    n = n,
-    logprobs = logprobs,
-    stop = stop,
-    presence_penalty = presence_penalty,
-    frequency_penalty = frequency_penalty,
-    verbose = verbose,
-);
-=#
 
-gpt_assistant(;kwargs...
+
+create_gpt_assistant(;kwargs...
 ) = gpt_assistant(
     prompt_input; kwargs...
 );
