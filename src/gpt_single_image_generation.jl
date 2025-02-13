@@ -39,7 +39,8 @@ function gpt_single_image(
   model = "dall-e-3",
   prompt_input=p,
   n = 1,
-  size = "256x256", # "512x512", "1024x1024"
+  size = "1024x1024", #  "256x256", "512x512", "1024x1024", "1024x1792", "1792x1024",
+  quality = "standard",
   response_format = "url", # "b64_json"
   output_type = "complete",
   verbose=true
@@ -51,6 +52,7 @@ function gpt_single_image(
     "model" => model,
     "n" => n,
     "size" => size,
+    "quality" => quality,
     "response_format" => response_format
   )
     
@@ -108,7 +110,8 @@ end
 
 gpt_single_image(;prompt_input="",
 n = 1,
-size = "256x256", # "512x512", "1024x1024"
+size = "1024x1024", # "1024x1792", "1792x1024"
+quality = "standard",
 response_format = "url", # "b64_json"
 output_type = "complete"
 ) = gpt_single_image(
@@ -116,9 +119,11 @@ output_type = "complete"
         prompt_input=prompt_input,
         n = n,
         size = size, 
+        quality=quality,
         response_format = response_format,
         output_type = output_type
         )
 ;
 
+dalle(p;kwargs...) = gpt_single_image(p;kwargs...)
 dalle(;kwargs...) = gpt_single_image(;kwargs...)

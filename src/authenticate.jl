@@ -14,7 +14,7 @@
 """
 function gpt_authenticate(path)
   global api_key = read(path, String)
-  println("Will use key at $path for authentication.")
+  println("Found API key. Key is accessible via <GPT.api_key>")
 end
 
 

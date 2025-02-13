@@ -55,14 +55,15 @@ function check_api_exists(;verbose=false)
 end
 
 function gptupload(file, purpose)
-  headers = ["Authorization" => "Bearer $api_key"]
+  headers = ["Authorization" => "Bearer $api_key", "Content-Type" => "multipart/form-data"]
   thisurl = url.file_upload
   parameter_list = Dict(
     "purpose" => purpose,
-    "file" => file
+    "file" => open(file)
   )
   request_base =
-  HTTP.request("POST", thisurl, form = JSON.json(parameter_list), headers = headers)
+  HTTP.request("POST", thisurl, body = HTTP.Form(parameter_list), headers = headers)
+  #HTTP.request("POST", thisurl, body = JSON.json(parameter_list), headers = headers)
   if request_base.status == 200
     request_content = JSON.parse(String(request_base.body))
   end
