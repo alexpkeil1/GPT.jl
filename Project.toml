@@ -1,4 +1,4 @@
-name = "gpt"
+name = "GPT"
 uuid = "d65eb933-142e-424c-b873-46cc474275a4"
 authors = ["Alex Keil <alex.keil@gmail.com>"]
 version = "0.4.0"
