@@ -68,7 +68,7 @@ gpt_reasoning(prompt_input = "Write a research idea about using text data to und
 function gpt_reasoning(
     p;
     prompt_input = p,
-    model = "o3-mini", # "o1"
+    model = "o1-mini", # "o1"
     reasoning_effort="medium",
     output_type = "complete",
     devmessage = raw"You use the ChatGPT defaults",
@@ -96,7 +96,7 @@ function gpt_reasoning(
 
     messages = [
         Dict("role" => "user", "content" => prompt_input),
-        Dict("role" => "developer", "content" => devmessage),
+        #Dict("role" => "developer", "content" => devmessage),
     ]
 
 
@@ -104,6 +104,7 @@ function gpt_reasoning(
     parameter_list = Dict(
         "messages" => messages,
         "reasoning_effort" => reasoning_effort,
+        "prompt" => prompt_input, # seems like it shouldn't be necessary
         "model" => model,
         "suffix" => suffix,
         "max_tokens" => max_tokens,
