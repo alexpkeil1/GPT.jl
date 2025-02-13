@@ -99,12 +99,17 @@ function gpt_single_image(
   )
 
   if output_type == "complete"
+    fl= download(core_output.gpt[1])
+    run(`open -a Preview.app $fl`)
     output = (core_output, meta_output)
   elseif output_type == "meta"
     output = meta_output
   elseif output_type == "image"
+    fl= download(core_output.gpt[1])
+    run(`open -a Preview.app $fl`)
     output = core_output
   end
+
   return(output)
 end
 
