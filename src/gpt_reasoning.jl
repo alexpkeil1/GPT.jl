@@ -108,7 +108,7 @@ function gpt_reasoning(
     if any(model .== ["o1-mini", "o1"])
         parameter_list = merge(
             parameter_list,
-            Dict("prompt" = prompt_input, "reasoning_effort" => reasoning_effort),
+            Dict("prompt" => prompt_input, "reasoning_effort" => reasoning_effort),
         )
     elseif any(model .== ["o3-mini", "o3"])
         parameter_list = merge(
