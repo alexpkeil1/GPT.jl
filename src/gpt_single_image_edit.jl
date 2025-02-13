@@ -47,7 +47,7 @@ function gpt_single_image_edit(
   if(model != "dall-e-2")
     throw("model must be dall-e-2")
   end
-  verbose ? println("Using $model"): true
+  verbose ? println("Using $model") : true
 
   isnothing(image) ? throw("`image` must not be nothing") : nothing
 

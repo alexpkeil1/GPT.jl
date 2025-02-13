@@ -56,7 +56,7 @@ function gpt_single_image_variations(
   if(model != "dall-e-2")
     throw("model must be dall-e-2")
   end
-  verbose ? println("Using $model"): true
+  gptverbose ? println("Using $model") : true
 
   parameter_list = Dict(
     #"n" => n,
