@@ -91,6 +91,11 @@ function gpt_reasoning(
             "You are running the deterministic model, so `n` was set to 1 to avoid unnecessary token quota usage.",
         )
     end
+    if (model[1:2]=="o1")
+        reasoning_effort = nothing
+        verbose ? println("Removing reasoning_effort") : true
+    end
+
     parameter_list = Dict(
         "model" => model,
         "suffix" => suffix,
@@ -106,18 +111,13 @@ function gpt_reasoning(
         parameter_list,
         Dict(
             "max_completion_tokens" => max_completion_tokens,
+            "reasoning_effort" => reasoning_effort,
             "messages" => [
                 Dict("role" => "user", "content" => prompt_input),
                 #Dict("role" => "developer", "content" => devmessage),
             ],
         ),
     )
-    if (model[1:2]=="o3")
-        parameter_list = merge(
-            parameter_list,
-            "reasoning_effort" => reasoning_effort,
-        )
-    end
 
     thisurl = url.chats
     deletenothingkeys!(parameter_list)
