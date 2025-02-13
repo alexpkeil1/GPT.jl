@@ -1,14 +1,14 @@
 """
- Makes bunch completion requests to the GPT-3 API
+ Makes bunch completion requests to the GPT API
 
- `gpt3_completions()` is the package's main function for rquests and takes as input a vector of prompts and processes each prompt as per the defined parameters. It extends the `gpt3_single_completion()` function to allow for bunch processing of requests to the Open AI GPT-3 API.
+ `gpt_completions()` is the package's main function for rquests and takes as input a vector of prompts and processes each prompt as per the defined parameters. It extends the `gpt_single_completion()` function to allow for bunch processing of requests to the Open AI GPT API.
 
 
 _Parameters_
 
-   - `prompt_var`: character vector that contains the prompts to the GPT-3 request
+   - `prompt_var`: character vector that contains the prompts to the GPT request
    - `id_var`: (optional) character vector that contains the user-defined ids of the prompts. See details.
-   - `param_model`: a character vector that indicates the [model](https://beta.openai.com/docs/models/gpt-3) to use; one of "gpt-3.5-turbo" (default), "text-davinci-003",  "text-davinci-002", "text-davinci-001", "text-curie-001", "text-babbage-001" or "text-ada-001"
+   - `param_model`: a character vector that indicates the [model](https://platform.openai.com/docs/models/gpt) to use; one of "GPT-4o mini" (default), "text-davinci-003",  "text-davinci-002", "text-davinci-001", "text-curie-001", "text-babbage-001" or "text-ada-001"
    - `param_output_type`: character determining the output provided: "complete" (default), "text" or "meta"
    - `param_suffix`: character (default: NULL) (from the official API documentation:The suffix that comes after a completion of inserted text_)
    - `param_max_tokens`: numeric (default: 100) indicating the maximum number of tokens that the completion request should return (from the official API documentation:The maximum number of tokens to generate in the completion. The token count of your prompt plus max_tokens cannot exceed the model"s context length. Most models have a context length of 2048 tokens (except for the newest models, which support 4096)_)
@@ -27,17 +27,17 @@ _Parameters_
    - `echo`: [https://beta.openai.com/docs/api-reference/completions/create#completions/create-echo](https://beta.openai.com/docs/api-reference/completions/create#completions/create-echo)
    - `stream`: [https://beta.openai.com/docs/api-reference/completions/create#completions/create-stream](https://beta.openai.com/docs/api-reference/completions/create#completions/create-stream)
 
- The easiest (and intended) use case for this function is to create a DataFrame with variables that contain the prompts to be requested from GPT-3 and a prompt id (see examples below).
+ The easiest (and intended) use case for this function is to create a DataFrame with variables that contain the prompts to be requested from GPT and a prompt id (see examples below).
  For a general guide on the completion requests, see [https://beta.openai.com/docs/guides/completion](https://beta.openai.com/docs/guides/completion). This function provides you with an R wrapper to send requests with the full range of request parameters as detailed on [https://beta.openai.com/docs/api-reference/completions](https://beta.openai.com/docs/api-reference/completions) and reproduced below.
 
- For the `best_of` parameter: The `gpt3_single_completion()` (which is used here in a vectorised manner) handles the issue that best_of must be greater than n by setting `if(best_of <= n){ best_of = n}`.
+ For the `best_of` parameter: The `gpt_single_completion()` (which is used here in a vectorised manner) handles the issue that best_of must be greater than n by setting `if(best_of <= n){ best_of = n}`.
 
  If `id_var` is not provided, the function will use `prompt_1` ... `prompt_n` as id variable.
 
 
 Returns: An array with two DataFrames (if `param_output_type` is the default "complete"): 
 
-    - [1] contains the data table with the columns `n` (= the mo. of `n` responses requested), `prompt` (= the prompt that was sent), `gpt3` (= the completion as returned from the GPT-3 model) and `id` (= the provided `id_var` or its default alternative). 
+    - [1] contains the data table with the columns `n` (= the mo. of `n` responses requested), `prompt` (= the prompt that was sent), `gpt` (= the completion as returned from the GPT model) and `id` (= the provided `id_var` or its default alternative). 
     - [2] contains the meta information of the request, including the request id, the parameters of the request and the token usage of the prompt (`tok_usage_prompt`), the completion (`tok_usage_completion`), the total usage (`tok_usage_total`), and the `id` (= the provided `id_var` or its default alternative).
 
  If `output_type` is "text", only the data table in slot [[1]] is returned.
@@ -45,20 +45,20 @@ Returns: An array with two DataFrames (if `param_output_type` is the default "co
  If `output_type` is "meta", only the data table in slot [[2]] is returned.
 
 
- # First authenticate with your API key via `gpt3_authenticate("pathtokey")`
+ # First authenticate with your API key via `gpt_authenticate("pathtokey")`
 
  # Once authenticated:
  # Assuming you have a data.table with 3 different prompts:
 
  ```
  dt_prompts = Dict("prompts" => ["What is the meaning if life?", "Write a tweet about London:", "Write a research proposal for using AI to fight fake news:"], "prompt_id" => ["a", "b", "c"])
-gpt3_completions(prompt_var = dt_prompts["prompts"]
+gpt_completions(prompt_var = dt_prompts["prompts"]
     , id_var = dt_prompts["prompt_id"])
 ```
 
  ## With more controls
 ```
-gpt3_completions(prompt_var = dt_prompts["prompts"]
+gpt_completions(prompt_var = dt_prompts["prompts"]
     , id_var = dt_prompts["prompt_id"]
     , param_max_tokens = 50
     , param_temperature = 0.5
@@ -66,22 +66,23 @@ gpt3_completions(prompt_var = dt_prompts["prompts"]
 ```
 
  ## Reproducible example (deterministic approach)
-gpt3_completions(prompt_var = dt_prompts["prompts"]
+gpt_completions(prompt_var = dt_prompts["prompts"]
     , id_var = dt_prompts["prompt_id"]
     , param_max_tokens = 50
     , param_temperature = 0.0)
 
- ## Changing the GPT-3 model
-gpt3_completions(prompt_var = dt_prompts["prompts"]
+ ## Changing the GPT model
+gpt_completions(prompt_var = dt_prompts["prompts"]
     , id_var = dt_prompts["prompt_id"]
     , param_model = "text-babbage-001"
     , param_max_tokens = 50
     , param_temperature = 0.4)
 
 """
-function gpt3_completions(prompt_var
+function gpt_completions(prompt_var
                               , id_var
                               , param_output_type = "complete"
+                              , param_devmessage = raw"You use the ChatGPT defaults"
                               , param_model = "gpt-4o-mini"
                               , param_suffix = NULL
                               , param_max_tokens = 100
@@ -91,8 +92,7 @@ function gpt3_completions(prompt_var
                               , param_logprobs = NULL
                               , param_stop = NULL
                               , param_presence_penalty = 0
-                              , param_frequency_penalty = 0
-                              , param_best_of = 1)
+                              , param_frequency_penalty = 0)
 
   data_length = length(prompt_var)
   if isnothing(id_var)
@@ -109,9 +109,10 @@ function gpt3_completions(prompt_var
 
   for i = 1:data_length
     println("Request: $i / $data_length")
-    row_outcome = gpt3_single_completion(prompt_input = prompt_var[i]
+    row_outcome = gpt_single_completion(prompt_input = prompt_var[i]
                                       , model = param_model
                                       , output_type = "complete"
+                                      , devmessage = param_devmessage
                                       , suffix = param_suffix
                                       , max_tokens = param_max_tokens
                                       , temperature = param_temperature
@@ -121,7 +122,7 @@ function gpt3_completions(prompt_var
                                       , stop = param_stop
                                       , presence_penalty = param_presence_penalty
                                       , frequency_penalty = param_frequency_penalty
-                                      , best_of = param_best_of)
+                                      )
 
     row_outcome[1].id .= data_id[i]
     merge!(row_outcome[2],Dict("id" => data_id[i]))

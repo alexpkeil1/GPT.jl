@@ -2,10 +2,9 @@
  Makes a single completion request to the GPT-3 API
 
  @description
- `gpt3_single_completion()` sends a single [completion request](https://beta.openai.com/docs/api-reference/completions) to the Open AI GPT-3 API.
+ `gpt_single_completion()` sends a single [completion request](https://beta.openai.com/docs/api-reference/completions) to the Open AI GPT-3 API.
  @details For a general guide on the completion requests, see [https://beta.openai.com/docs/guides/completion](https://beta.openai.com/docs/guides/completion). This function provides you with an R wrapper to send requests with the full range of request parameters as detailed on [https://beta.openai.com/docs/api-reference/completions](https://beta.openai.com/docs/api-reference/completions) and reproduced below.
 
- For the `best_of` parameter: When used with n, best_of controls the number of candidate completions and n specifies how many to return – best_of must be greater than n. Note that this is handled by the wrapper automatically   best_of = best_of < n ? n : best_of.
 
 *Parameters*
 
@@ -21,7 +20,7 @@
    - `stop`: character or character vector (default: NULL) that specifies after which character value when the completion should end (from the official API documentation:Up to 4 sequences where the API will stop generating further tokens. The returned text will not contain the stop sequence._)
    - `presence_penalty`: numeric (default: 0) between -2.00  and +2.00 to determine the penalisation of repetitiveness if a token already exists (from the official API documentation:Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far, increasing the model"s likelihood to talk about new topics._). See also: [https://beta.openai.com/docs/api-reference/parameter-details](https://beta.openai.com/docs/api-reference/parameter-details)
    - `frequency_penalty`: numeric (default: 0) between -2.00  and +2.00 to determine the penalisation of repetitiveness based on the frequency of a token in the text already (from the official API documentation:Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing frequency in the text so far, decreasing the model"s likelihood to repeat the same line verbatim._). See also: [https://beta.openai.com/docs/api-reference/parameter-details](https://beta.openai.com/docs/api-reference/parameter-details)
-   - `best_of`: numeric (default: 1) that determines the space of possibilities from which to select the completion with the highest probability (from the official API documentation:Generates `best_of`` completions server-side and returns the "best" (the one with the highest log probability per token)_). See details.
+   - `verbose`: print model to output
 
  Parameters not included/supported:
  
@@ -32,7 +31,7 @@
 
  A tuple with two DataFrames (if `output_type` is the default "complete"): 
  
-   - [1] contains the data table with the columns `n` (= the mo. of `n` responses requested), `prompt` (= the prompt that was sent), and `gpt3` (= the completion as returned from the GPT-3 model). 
+   - [1] contains the data table with the columns `n` (= the mo. of `n` responses requested), `prompt` (= the prompt that was sent), and `gpt` (= the completion as returned from the GPT-3 model). 
    - [2] contains the meta information of the request, including the request id, the parameters of the request and the token usage of the prompt (`tok_usage_prompt`), the completion (`tok_usage_completion`) and the total usage (`tok_usage_total`).
 
  If `output_type` is "text", only the DataFrames in slot [1] is returned.
@@ -41,157 +40,140 @@
 
 
  _Examples_
- # First authenticate with your API key via `gpt3_authenticate("pathtokey")`
+ # First authenticate with your API key via `gpt_authenticate("pathtokey")`
 
  # Once authenticated:
 
  ## Simple request with defaults:
- gpt3_single_completion(prompt_input = "How old are you?")
+ gpt_single_completion(prompt_input = "How old are you?")
 
  ## Instruct GPT-3 to write ten research ideas of max. 150 tokens with some controls:
-gpt3_single_completion(prompt_input = "Write a research idea about using text data to understand human behaviour:"
+gpt_single_completion(prompt_input = "Write a research idea about using text data to understand human behaviour:"
     , temperature = 0.8
     , n = 10
     , max_tokens = 150)
 
  ## For fully reproducible results, we need `temperature = 0`, e.g.:
- gpt3_single_completion(prompt_input = "Finish this sentence:/n There is no easier way to learn Julia than"
+ gpt_single_completion(prompt_input = "Finish this sentence:/n There is no easier way to learn Julia than"
      , temperature = 0.0
      , max_tokens = 50)
 
  ## The same example with a different GPT-3 model:
- gpt3_single_completion(prompt_input = "Finish this sentence:/n There is no easier way to learn Julia than"
+ gpt_single_completion(prompt_input = "Finish this sentence:/n There is no easier way to learn Julia than"
      , model = "gpt-4o-mini"
      , temperature = 0.0
      , max_tokens = 50)
 
 """
-function gpt3_single_completion(
-  p;
-  prompt_input=p,
-  model = "gpt-4o-mini",
-  output_type = "complete",
-  suffix = nothing,
-  max_tokens = 100,
-  temperature = 0.9,
-  top_p = 1,
-  n = 1,
-  logprobs = nothing,
-  stop = nothing,
-  presence_penalty = 0,
-  frequency_penalty = 0,
-  best_of = 1
+function gpt_single_completion(
+    p;
+    prompt_input = p,
+    model = "gpt-4o-mini",
+    output_type = "complete",
+    devmessage = raw"You use the ChatGPT defaults",
+    suffix = nothing,
+    max_tokens = 100,
+    temperature = 0.9,
+    top_p = 1,
+    n = 1,
+    logprobs = nothing,
+    stop = nothing,
+    presence_penalty = 0,
+    frequency_penalty = 0,
+    verbose = true,
 )
-  check_api_exists()
+    check_api_exists()
+    verbose ? println("Using $model") : true
 
-  #check for request issues with `n` and `best_of`
-  #if best_of < n
-  #  best_of = n
-  #  message("To avoid an `invalid_request_error`, `best_of` was set to equal `n`")
-  #end
-
-  if (temperature == 0) && (n > 1)
-    n = 1
-    message("You are running the deterministic model, so `n` was set to 1 to avoid unnecessary token quota usage.")
-  end
-
-  messages = [
-    Dict("role" => "user", 
-    "content" => prompt_input),
-    Dict("role" => "developer", 
-    "content" => raw"You use the ChatGPT defaults")
-]
-
-  
-
-  parameter_list = Dict(
-    "messages" => messages,
-    "model" => model,
-    #"prompt" => prompt_input,
-    "suffix" => suffix,
-    "max_tokens" => max_tokens,
-    "temperature" => temperature,
-    "top_p" => top_p,
-    "n" => n,
-    "logprobs" => logprobs,
-    "stop" => stop,
-    "presence_penalty" => presence_penalty,
-    "frequency_penalty" => frequency_penalty,
-    #"best_of" => best_of,
-    #
-    #"echo" => true
-    )
-  
-  chatmodels = ["gpt-4o-mini"]
-  thisurl = any(model .== chatmodels) ?  url.chats : url.completions
-  deletenothingkeys!(parameter_list)    
-    
-  headers = Dict(
-    "Authorization" => "Bearer $api_key",
-    "Content-Type" => "application/json"
-    )
-
-  request_base = HTTP.request(
-    "POST",
-    thisurl,
-    body=JSON.json(parameter_list),
-    headers=headers
-  );
-  # request_base.status
-  if request_base.status == 200
-    request_content = JSON.parse(String(request_base.body))
-  end
-  
-  if n == 1
-    core_output = DataFrame(
-                   "n" => 1,
-                   "prompt" => prompt_input,
-                   "gpt3" => request_content["choices"][1]["message"]["content"]
-                   )
-  elseif n > 1
-    core_output = DataFrame(
-                   "n" => 1:n,
-                   "prompt" => fill(prompt_input, n),
-                   "gpt3" => fill("", n)
-                   )
-    for i in 1:n
-      core_output.gpt3[i] = request_content["choices"][i]["text"]
+    if (temperature == 0) && (n > 1)
+        n = 1
+        message(
+            "You are running the deterministic model, so `n` was set to 1 to avoid unnecessary token quota usage.",
+        )
     end
-  end
-  
 
-  meta_output = Dict(
-    "request_id" => request_content["id"],
-    "object" => request_content["object"],
-    "model" => request_content["model"],
-    "param_prompt" => prompt_input,
-    "param_model" => model,
-    "param_suffix" => suffix,
-    "param_max_tokens" => max_tokens,
-    "param_temperature" => temperature,
-    "param_top_p" => top_p,
-    "param_n" => n,
-    "param_logprobs" => logprobs,
-    "param_stop" => stop,
-    "param_presence_penalty" => presence_penalty,
-    "param_frequency_penalty" => frequency_penalty,
-    "param_best_of" => best_of,
-    "tok_usage_prompt" => request_content["usage"]["prompt_tokens"],
-    "tok_usage_completion" => request_content["usage"]["completion_tokens"],
-    "tok_usage_total" => request_content["usage"]["total_tokens"]
-  )
+    messages = [
+        Dict("role" => "user", "content" => prompt_input),
+        Dict("role" => "developer", "content" => devmessage),
+    ]
 
-  if output_type == "complete"
-    output = (core_output, meta_output)
-  elseif output_type == "meta"
-    output = meta_output
-  elseif output_type == "text"
-    output = core_output
-  end
-  return(output)
+
+
+    parameter_list = Dict(
+        "messages" => messages,
+        "model" => model,
+        "suffix" => suffix,
+        "max_tokens" => max_tokens,
+        "temperature" => temperature,
+        "top_p" => top_p,
+        "n" => n,
+        "logprobs" => logprobs,
+        "stop" => stop,
+        "presence_penalty" => presence_penalty,
+        "frequency_penalty" => frequency_penalty,
+    )
+
+    chatmodels = ["gpt-4o-mini"]
+    thisurl = any(model .== chatmodels) ? url.chats : url.completions
+    deletenothingkeys!(parameter_list)
+
+    headers =
+        Dict("Authorization" => "Bearer $api_key", "Content-Type" => "application/json")
+
+    request_base =
+        HTTP.request("POST", thisurl, body = JSON.json(parameter_list), headers = headers)
+    # request_base.status
+    if request_base.status == 200
+        request_content = JSON.parse(String(request_base.body))
+    end
+
+    if n == 1
+        core_output = DataFrame(
+            "n" => 1,
+            "prompt" => prompt_input,
+            "gpt" => request_content["choices"][1]["message"]["content"],
+        )
+    elseif n > 1
+        core_output =
+            DataFrame("n" => 1:n, "prompt" => fill(prompt_input, n), "gpt" => fill("", n))
+        for i = 1:n
+            core_output.gpt[i] = request_content["choices"][i]["text"]
+        end
+    end
+
+
+    meta_output = Dict(
+        "request_id" => request_content["id"],
+        "object" => request_content["object"],
+        "model" => request_content["model"],
+        "param_prompt" => prompt_input,
+        "param_model" => model,
+        "param_suffix" => suffix,
+        "param_max_tokens" => max_tokens,
+        "param_temperature" => temperature,
+        "param_top_p" => top_p,
+        "param_n" => n,
+        "param_logprobs" => logprobs,
+        "param_stop" => stop,
+        "param_presence_penalty" => presence_penalty,
+        "param_frequency_penalty" => frequency_penalty,
+        "tok_usage_prompt" => request_content["usage"]["prompt_tokens"],
+        "tok_usage_completion" => request_content["usage"]["completion_tokens"],
+        "tok_usage_total" => request_content["usage"]["total_tokens"],
+    )
+
+    if output_type == "complete"
+        output = (core_output, meta_output)
+    elseif output_type == "meta"
+        output = meta_output
+    elseif output_type == "text"
+        output = core_output
+    end
+    return (output)
 end
-
-gpt3_single_completion(;prompt_input="",
+#=
+gpt_single_completion(;
+    prompt_input = "",
     model = "gpt-4o-mini",
     output_type = "complete",
     suffix = nothing,
@@ -203,21 +185,26 @@ gpt3_single_completion(;prompt_input="",
     stop = nothing,
     presence_penalty = 0,
     frequency_penalty = 0,
-    best_of = 1
-) = gpt3_single_completion(
-        prompt_input;
-        prompt_input=prompt_input,
-        model = model,
-        output_type = output_type,
-        suffix = suffix,
-        max_tokens = max_tokens,
-        temperature = temperature,
-        top_p = top_p,
-        n = n,
-        logprobs = logprobs,
-        stop = stop,
-        presence_penalty = presence_penalty,
-        frequency_penalty = frequency_penalty,
-        best_of = best_of
-    )
-;
+    verbose = true,
+) = gpt_single_completion(
+    prompt_input;
+    prompt_input = prompt_input,
+    model = model,
+    output_type = output_type,
+    suffix = suffix,
+    max_tokens = max_tokens,
+    temperature = temperature,
+    top_p = top_p,
+    n = n,
+    logprobs = logprobs,
+    stop = stop,
+    presence_penalty = presence_penalty,
+    frequency_penalty = frequency_penalty,
+    verbose = verbose,
+);
+=#
+
+gpt_single_completion(;kwargs...
+) = gpt_single_completion(
+    prompt_input; kwargs...
+);

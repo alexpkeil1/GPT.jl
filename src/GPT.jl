@@ -1,7 +1,7 @@
 """
-Placeholder for a short summary about GPT3.
+Placeholder for a short summary about gpt.
 """
-module GPT3
+module GPT
 
 ##############################################################################
 ##
@@ -20,14 +20,14 @@ import DataFrames: DataFrame
 ##
 ##############################################################################
 
-export  #gpt3_single_embedding,
-        gpt3_single_completion,
-        gpt3_single_image,
-        gpt3_single_image_edit,
-        gpt3_single_image_variations,
-        #gpt3_completions,
-        #gpt3_embeddings,
-        gpt3_authenticate,
+export  #gpt_single_embedding,
+        gpt_single_completion,
+        gpt_single_image,
+        gpt_single_image_edit,
+        gpt_single_image_variations,
+        #gpt_completions,
+        #gpt_embeddings,
+        gpt_authenticate,
         check_apikey_form,
         deletenothingkeys!,
         check_api_exists
@@ -40,13 +40,13 @@ export  #gpt3_single_embedding,
 ##############################################################################
 include("authenticate.jl")
 include("base_urls.jl")
-#include("gpt3_completions.jl")
-#include("gpt3_embeddings.jl")
-include("gpt3_single_completion.jl")
-#include("gpt3_single_embedding.jl")
-include("gpt3_single_image_generation.jl")
-include("gpt3_single_image_edit.jl")
-include("gpt3_single_image_variations.jl")
+#include("gpt_completions.jl")
+#include("gpt_embeddings.jl")
+include("gpt_single_completion.jl")
+#include("gpt_single_embedding.jl")
+include("gpt_single_image_generation.jl")
+include("gpt_single_image_edit.jl")
+include("gpt_single_image_variations.jl")
 #include("test_completion.jl")
 include("utils.jl")
 

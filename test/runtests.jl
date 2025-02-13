@@ -1,4 +1,4 @@
-using GPT3
+using gpt
 using Test
 
 # write tests here

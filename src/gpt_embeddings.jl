@@ -1,9 +1,9 @@
 """
 Retrieves text embeddings for character input from a vector from the GPT-3 API
 
-travel_blog_data = gpt3_single_request(prompt_input = "Write a travel blog about a dog"s journey through the UK:", temperature = 0.8, n = 10, max_tokens = 200)[1]
+travel_blog_data = gpt_single_request(prompt_input = "Write a travel blog about a dog"s journey through the UK:", temperature = 0.8, n = 10, max_tokens = 200)[1]
 """
-function gpt3_embeddings(
+function gpt_embeddings(
   input_var, 
   id_var,
   param_model = "text-similarity-ada-002"
@@ -19,7 +19,7 @@ function gpt3_embeddings(
 
   for i in 1:data_length
     println("Embedding: $i / $data_length")
-    row_outcome = gpt3_single_embedding(model = param_model
+    row_outcome = gpt_single_embedding(model = param_model
                                       , input = input_var[i])
     empty_df = DataFrame(t(row_outcome))
     rename!(empty_df, ["dim_$i" for i in  1:length(row_outcome)])

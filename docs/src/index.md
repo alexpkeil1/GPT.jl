@@ -1,6 +1,6 @@
-# GPT3
+# GPT
 
-Access the [GPT-3 API](https://beta.openai.com/docs/introduction/overview) from Julia. A line-for-line port from the R package [rgpt3](https://github.com/ben-aaron188/rgpt3) from [ben-aaron188](https://github.com/ben-aaron188)[^1]
+Access the [GPT-3 API](https://beta.openai.com/docs/introduction/overview) from Julia. A line-for-line port from the R package [rgpt](https://github.com/ben-aaron188/rgpt) from [ben-aaron188](https://github.com/ben-aaron188)[^1]
 
 ```@contents
 ```
@@ -9,15 +9,15 @@ Access the [GPT-3 API](https://beta.openai.com/docs/introduction/overview) from 
 
 ```@docs
 
-gpt3_authenticate
-gpt3_single_completion
-gpt3_single_embedding
-gpt3_single_image
-gpt3_single_image_edit
-gpt3_completions
-gpt3_embeddings
-GPT3
+gpt_authenticate
+gpt_single_completion
+gpt_single_embedding
+gpt_single_image
+gpt_single_image_edit
+gpt_completions
+gpt_embeddings
+gpt
 ```
 
 
-[^1]: Kleinberg, B. (2022). rgpt3: Making requests from R to the GPT-3 API (Version 0.3) [Computer software]. https://doi.org/10.5281/zenodo.7327667
+[^1]: Kleinberg, B. (2022). rgpt: Making requests from R to the GPT-3 API (Version 0.3) [Computer software]. https://doi.org/10.5281/zenodo.7327667

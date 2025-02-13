@@ -28,7 +28,7 @@ end
 function check_api_exists()
     isapi = @isdefined api_key
     if !isapi
-      @warn "Use gpt3_authenticate() to set your API key"
+      @warn "Use gpt_authenticate() to set your API key"
       throw("`api_key` is not defined in the global scope")
     end
 end
