@@ -118,7 +118,7 @@ function gpt_reasoning(
 
     thisurl = url.chats
     deletenothingkeys!(parameter_list)
-    println(paramter_list)
+    println(parameter_list)
     headers =
         Dict("Authorization" => "Bearer $api_key", "Content-Type" => "application/json")
 
