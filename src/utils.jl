@@ -22,7 +22,7 @@ function listgptmodels()
   for r in request_content["data"]
     rr = vcat(rr, DataFrame(r))
   end
-
+  rr
 end
 
 function gptmodelinfo(model)
