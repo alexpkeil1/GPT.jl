@@ -213,5 +213,5 @@ gpt_reasoning(;kwargs...
     prompt_input; kwargs...
 );
 
-reasongpt(;kwargs...) = reasongpt(;kwargs...)
-reasongpt(p;kwargs...) = reasongpt(p;kwargs...)
+reasongpt(;kwargs...) = gpt_reasoning(;kwargs...)
+reasongpt(p;kwargs...) = gpt_reasoning(p;kwargs...)
