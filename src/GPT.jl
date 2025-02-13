@@ -21,6 +21,9 @@ import DataFrames: DataFrame
 ##############################################################################
 
 export  #gpt_single_embedding,
+        chatgpt,
+        dalle,
+        listgptmodels,
         gpt_single_completion,
         gpt_single_image,
         gpt_single_image_edit,

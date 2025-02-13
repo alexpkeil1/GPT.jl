@@ -11,7 +11,7 @@ function message(x)
 end
 
 
-function listmodels(model)
+function listgptmodels(model)
   headers = ["Authorization" => "Bearer $api_key"]
   #model = "text-davinci-003"
   HTTP.get("https://api.openai.com/v1/models/$model", headers)

@@ -120,3 +120,5 @@ output_type = "complete"
         output_type = output_type
         )
 ;
+
+dalle(;kwargs...) = gpt_single_image(;kwargs...)
