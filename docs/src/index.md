@@ -1,6 +1,6 @@
 # GPT
 
-Access the [GPT-3 API](https://beta.openai.com/docs/introduction/overview) from Julia. A line-for-line port from the R package [rgpt](https://github.com/ben-aaron188/rgpt) from [ben-aaron188](https://github.com/ben-aaron188)[^1]
+Access the [GPT-3 API](https://beta.openai.com/docs/introduction/overview) from Julia. A line-for-line port from the R package [rgpt](https://github.com/ben-aaron188/rgpt3) from [ben-aaron188](https://github.com/ben-aaron188)[^1]
 
 ```@contents
 ```
