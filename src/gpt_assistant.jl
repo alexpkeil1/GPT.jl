@@ -403,7 +403,7 @@ function run_gpt_thread(;
     )
     #parameter_list = makemetadata(Dict(kwargs...), ["tools"])
     parameter_list = Dict(
-        "thread_id" => thread_id,
+        #"thread_id" => thread_id,
         "assistant_id" => assistant_id,
         "model" => model,
         "reasoning_effort" => reasoning_effort,
