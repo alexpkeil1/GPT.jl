@@ -401,12 +401,7 @@ function run_gpt_thread(;
         "Content-Type" => "application/json",
         "OpenAI-Beta" => "assistants=v2",
     )
-
-    messages = [
-        Dict("role" => "user", "content" => prompt_input),
-        Dict("role" => "developer", "content" => devmessage),
-    ]
-
+    #parameter_list = makemetadata(Dict(kwargs...), ["tools"])
     parameter_list = Dict(
         "thread_id" => thread_id,
         "assistant_id" => assistant_id,

@@ -102,8 +102,9 @@ function makemetadata(request_content, exemptkeys)
     end
     meta_output = Dict()
     for (k, v) in request_content
-        if all(k .!= exemptkeys)
-            meta_output[k] = v
+        kstr = String(k)
+        if all(kstr .!= exemptkeys)
+            meta_output[kstr] = v
         end
     end
     meta_output
