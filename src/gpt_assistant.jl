@@ -396,8 +396,6 @@ function run_gpt_thread(;
     )
 
     deletenothingkeys!(parameter_list)
-
-
     request_base =
         HTTP.request("POST", queryurl, body = JSON.json(parameter_list), headers = headers)
     # request_base.status
