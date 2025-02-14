@@ -60,8 +60,8 @@ create_gpt_thread()
 
 """
 function create_gpt_assistant(
-    n="Default Assistant",
-    i="Assist in a variety of tasks including scheduling, statistical coding, and brainstorming."
+    n,
+    i
     ;
     name = n,
     instructions = i,
