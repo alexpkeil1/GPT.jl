@@ -170,27 +170,15 @@ function list_gpt_assistants(;
         if request_base.status == 200
             request_content = JSON.parse(String(request_base.body))
         end
-        return(request_content)
         #
-        core_output = DataFrame(
-            "name" => name,
-            "instructions" => instructions,
-            "assistantID" => request_content["id"],
-        )
+        core_output = DataFrame(request_content["data"])
     
         meta_output = Dict(
-            "request_id" => request_content["id"],
+            "first_id" => request_content["first_id"],
+            "last_id" => request_content["last_id"],
             "object" => request_content["object"],
-            "model" => request_content["model"],
-            "param_name" => name,
-            "param_instructions" => instructions,
-            "param_tool" => tools,
-            "param_model" => model,
-            "tools" => request_content["tools"],
-            "resources" => request_content["tool_resources"],
-            #"tok_usage_prompt" => request_content["usage"]["prompt_tokens"],
-            #"tok_usage_completion" => request_content["usage"]["completion_tokens"],
-            #"tok_usage_total" => request_content["usage"]["total_tokens"],
+            "query" => queryurl,
+            "has_more" => request_content["has_more"],
         )
     
         if output_type == "complete"
