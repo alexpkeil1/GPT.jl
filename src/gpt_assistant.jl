@@ -95,7 +95,7 @@ function create_gpt_assistant(
 
     messages = [
         Dict("role" => "user", "content" => prompt_input),
-        Dict("role" => "developer", "content" => devmessage),
+        Dict("role" => "developer", "content" => instructions),
     ]
 
 

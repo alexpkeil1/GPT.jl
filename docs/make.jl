@@ -1,6 +1,6 @@
 # see documentation at https://juliadocs.github.io/Documenter.jl/stable/
 
-using Documenter, gpt
+using Documenter, GPT
 
 makedocs(
     modules = [GPT],
