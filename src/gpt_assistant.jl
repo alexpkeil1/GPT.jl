@@ -63,8 +63,7 @@
 create_gpt_thread()
 
 """
-function create_gpt_assistant(
-    ;
+function create_gpt_assistant(;
     name = "Default",
     instructions = "You do some admin tasks, such as scheduling",
     model = "gpt-4o-mini",
@@ -90,11 +89,11 @@ function create_gpt_assistant(
     thisurl = url.assistants
     deletenothingkeys!(parameter_list)
 
-    headers =
-        Dict("Authorization" => "Bearer $api_key", 
-        "Content-Type" => "application/json", 
-        "OpenAI-Beta" => "assistants=v2"
-        )
+    headers = Dict(
+        "Authorization" => "Bearer $api_key",
+        "Content-Type" => "application/json",
+        "OpenAI-Beta" => "assistants=v2",
+    )
 
     request_base =
         HTTP.request("POST", thisurl, body = JSON.json(parameter_list), headers = headers)
@@ -103,11 +102,11 @@ function create_gpt_assistant(
         request_content = JSON.parse(String(request_base.body))
     end
     println(request_content)
-        core_output = DataFrame(
-            "name" => name,
-            "instructions" => instructions,
-            "assistantID" => request_content["id"],
-        )
+    core_output = DataFrame(
+        "name" => name,
+        "instructions" => instructions,
+        "assistantID" => request_content["id"],
+    )
 
     meta_output = Dict(
         "request_id" => request_content["id"],
@@ -118,7 +117,7 @@ function create_gpt_assistant(
         "param_tool" => tools,
         "param_model" => model,
         "tools" => request_content["tools"],
-        "resources" => request_content["tool_resources"]
+        "resources" => request_content["tool_resources"],
         #"tok_usage_prompt" => request_content["usage"]["prompt_tokens"],
         #"tok_usage_completion" => request_content["usage"]["completion_tokens"],
         #"tok_usage_total" => request_content["usage"]["total_tokens"],
@@ -135,12 +134,10 @@ function create_gpt_assistant(
 end
 
 
-create_gpt_assistant(n,i;kwargs...
-) = create_gpt_assistant(; name=n, instructions=i, kwargs...
-);
+create_gpt_assistant(n, i; kwargs...) =
+    create_gpt_assistant(; name = n, instructions = i, kwargs...);
 
-list_gpt_assistants(
-    ;
+list_gpt_assistants() = create_gpt_assistant(;
     name = nothing,
     instructions = nothing,
     model = nothing,
@@ -149,32 +146,29 @@ list_gpt_assistants(
     verbose = true,
 )
 
-function create_gpt_thread(;output_type = "complete",verbose = true)
+function create_gpt_thread(; output_type = "complete", verbose = true)
     check_api_exists()
     verbose ? println("Creating thread") : true
     thisurl = url.threads
-    headers =
-        Dict("Authorization" => "Bearer $api_key", 
-        "Content-Type" => "application/json", 
-        "OpenAI-Beta" => "assistants=v2"
-        )
+    headers = Dict(
+        "Authorization" => "Bearer $api_key",
+        "Content-Type" => "application/json",
+        "OpenAI-Beta" => "assistants=v2",
+    )
 
-    request_base =
-        HTTP.request("POST", thisurl, body = JSON.json(""), headers = headers)
+    request_base = HTTP.request("POST", thisurl, body = JSON.json(""), headers = headers)
     # request_base.status
     if request_base.status == 200
         request_content = JSON.parse(String(request_base.body))
     end
-        core_output = DataFrame(
-            "id" => request_content["id"],
-            "gpt" => request_content["object"]
-        )
+    core_output =
+        DataFrame("id" => request_content["id"], "gpt" => request_content["object"])
 
     meta_output = Dict(
         "request_id" => request_content["id"],
         "object" => request_content["object"],
         "metadata" => request_content["metadata"],
-        "tool_resources" => request_content["tool_resources"]
+        "tool_resources" => request_content["tool_resources"],
     )
 
     if output_type == "complete"
@@ -237,11 +231,11 @@ function instruct_gpt_assistant(
     thisurl = url.assistants
     deletenothingkeys!(parameter_list)
 
-    headers =
-        Dict("Authorization" => "Bearer $api_key", 
-        "Content-Type" => "application/json", 
-        "OpenAI-Beta" => "assistants=v2"
-        )
+    headers = Dict(
+        "Authorization" => "Bearer $api_key",
+        "Content-Type" => "application/json",
+        "OpenAI-Beta" => "assistants=v2",
+    )
 
     request_base =
         HTTP.request("POST", thisurl, body = JSON.json(parameter_list), headers = headers)
