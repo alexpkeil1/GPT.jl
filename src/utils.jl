@@ -89,16 +89,15 @@ request_content = Dict("run" => 1)
 exemptkeys = ["run"]
 meta_output = Dict()
 for (k, v) in request_content
-  if all(k .!= exemptkeys)
-    meta_output[k] = v
+    if all(k .!= exemptkeys)
+        meta_output[k] = v
+    end
 end
-end
+meta_output
 
-makemetadata(request_content, ["fun"])
-makemetadata(request_content, ["run"])
 """
 function makemetadata(request_content, exemptkeys)
-    if length(exemptkeys)==0
+    if length(exemptkeys) == 0
         return (request_content)
     end
     meta_output = Dict()

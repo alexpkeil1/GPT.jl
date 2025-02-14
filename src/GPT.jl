@@ -33,6 +33,7 @@ export  # convenience calls ("API")
         create_gpt_thread,
         add_gpt_message,
         get_gpt_thread,
+        #list_gpt_threads,        
         gptupload,
         list_gpt_assistants,
         delete_gpt_assistant,
