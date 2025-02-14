@@ -32,6 +32,7 @@ export  # convenience calls ("API")
         create_gpt_assistant,
         create_gpt_thread,
         gptupload,
+        list_gpt_assistants,
         # info
         listgptmodels,
         gptmodelinfo,

@@ -54,9 +54,12 @@
  ## Create an assistant
  name = "Admin"
  instructions = "Assist in a variety of tasks including scheduling, statistical coding, and brainstorming."
- asst = GPT.create_gpt_assistant(name, instructions;
+ asst = create_gpt_assistant(name, instructions;
                       tools = ["code_interpreter", "file_search"])
-
+  asst2 = create_gpt_assistant("Coder", "You are an expert at Julia coding for statistical analysis";
+                      tools = ["code_interpreter", "file_search"])
+  asst[1]
+  asst2[1]
 create_gpt_thread()
 
 """
@@ -135,6 +138,16 @@ end
 create_gpt_assistant(n,i;kwargs...
 ) = create_gpt_assistant(; name=n, instructions=i, kwargs...
 );
+
+list_gpt_assistants(
+    ;
+    name = nothing,
+    instructions = nothing,
+    model = nothing,
+    tools = nothing,
+    output_type = "complete",
+    verbose = true,
+)
 
 function create_gpt_thread(;output_type = "complete",verbose = true)
     check_api_exists()
