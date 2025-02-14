@@ -141,55 +141,86 @@ create_gpt_assistant(n, i; kwargs...) =
     create_gpt_assistant(; name = n, instructions = i, kwargs...);
 
 function list_gpt_assistants(;
-        limit=20,
-        order="desc",
-        after = nothing,
-        before = nothing,
-        output_type = "complete",
-        verbose = true,
-    )
-        check_api_exists()
-        verbose ? println("Checking for GPT assistants") : true
-        thisurl = url.assistants
-        query = "?"
-        kws = ["limit", "order", "after", "before"]
-        ps = [limit, order, after, before]
-        for i in 1:length(kws)
-            qq = isnothing(ps[i]) ? "" : "&$(kws[i])=$(ps[i])" 
-                query*=qq 
-        end    
-        queryurl = thisurl * query
-        headers = Dict(
-            "Authorization" => "Bearer $api_key",
-            "Content-Type" => "application/json",
-            "OpenAI-Beta" => "assistants=v2",
-        )
-        request_base =
-            HTTP.request("GET", queryurl, headers = headers)
-        # request_base.status
-        if request_base.status == 200
-            request_content = JSON.parse(String(request_base.body))
-        end
-        #
-        core_output = DataFrame(request_content["data"])
-    
-        meta_output = Dict(
-            "first_id" => request_content["first_id"],
-            "last_id" => request_content["last_id"],
-            "object" => request_content["object"],
-            "query" => queryurl,
-            "has_more" => request_content["has_more"],
-        )
-    
-        if output_type == "complete"
-            output = (core_output, meta_output)
-        elseif output_type == "meta"
-            output = meta_output
-        elseif output_type == "text"
-            output = core_output
-        end
-        return (output)
+    limit = 20,
+    order = "desc",
+    after = nothing,
+    before = nothing,
+    output_type = "complete",
+    verbose = true,
+)
+    check_api_exists()
+    verbose ? println("Checking for GPT assistants") : true
+    thisurl = url.assistants
+    query = "?"
+    kws = ["limit", "order", "after", "before"]
+    ps = [limit, order, after, before]
+    for i = 1:length(kws)
+        qq = isnothing(ps[i]) ? "" : "&$(kws[i])=$(ps[i])"
+        query *= qq
     end
+    queryurl = thisurl * query
+    headers = Dict(
+        "Authorization" => "Bearer $api_key",
+        "Content-Type" => "application/json",
+        "OpenAI-Beta" => "assistants=v2",
+    )
+    request_base = HTTP.request("GET", queryurl, headers = headers)
+    # request_base.status
+    if request_base.status == 200
+        request_content = JSON.parse(String(request_base.body))
+    end
+    #
+    core_output = DataFrame(request_content["data"])
+
+    meta_output = Dict(
+        "first_id" => request_content["first_id"],
+        "last_id" => request_content["last_id"],
+        "object" => request_content["object"],
+        "query" => queryurl,
+        "has_more" => request_content["has_more"],
+    )
+
+    if output_type == "complete"
+        output = (core_output, meta_output)
+    elseif output_type == "meta"
+        output = meta_output
+    elseif output_type == "text"
+        output = core_output
+    end
+    return (output)
+end
+
+function delete_gpt_assistant(p; output_type = "complete", verbose = true)
+    check_api_exists()
+    verbose ? println("Deleting GPT assistant $p") : true
+    thisurl = url.assistants
+    query = "/$p"
+    queryurl = thisurl * query
+    headers = Dict(
+        "Authorization" => "Bearer $api_key",
+        "Content-Type" => "application/json",
+        "OpenAI-Beta" => "assistants=v2",
+    )
+    request_base = HTTP.request("DELETE", queryurl, headers = headers)
+    # request_base.status
+    if request_base.status == 200
+        request_content = JSON.parse(String(request_base.body))
+    end
+    #
+    core_output = DataFrame(request_content)
+
+    meta_output = Dict()
+
+    if output_type == "complete"
+        output = (core_output, meta_output)
+    elseif output_type == "meta"
+        output = meta_output
+    elseif output_type == "text"
+        output = core_output
+    end
+    return (output)
+end
+
 
 function create_gpt_thread(; output_type = "complete", verbose = true)
     check_api_exists()
