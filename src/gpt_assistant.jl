@@ -1,5 +1,12 @@
 """
- Makes a single completion request to the GPT-3 API
+ Makes working with an Assistant from the OpenAI API
+
+
+ - Assistants can call OpenAI's models with specific instructions to tune their personality and capabilities.
+ - Assistants can access multiple tools in parallel. These can be both OpenAI-hosted tools — like code_interpreter and file_search — or tools you build / host (via function calling).
+ - Assistants can access persistent Threads. Threads simplify AI application development by storing message history and truncating it when the conversation gets too long for the model’s context length. You create a Thread once, and simply append Messages to it as your users reply.
+ - Assistants can access files in several formats — either as part of their creation or as part of Threads between Assistants and users. When using tools, Assistants can also create files (e.g., images, spreadsheets, etc) and cite files they reference in the Messages they create.
+
 
  @description
  `gpt_assistant()` sends a single [completion request](https://beta.openai.com/docs/api-reference/completions) to the Open AI GPT-3 API.
@@ -44,33 +51,142 @@
 
  # Once authenticated:
 
- ## Simple request with defaults:
- gpt_assistant(prompt_input = "How old are you?")
+ ## Create an assistant
+ asst = GPT.create_gpt_assistant("Admin",
+                      "Assist in a variety of tasks including scheduling, statistical coding, and brainstorming.";
+                      tools = ["code_interpreter", "file_search"])
 
- ## Instruct GPT-3 to write ten research ideas of max. 150 tokens with some controls:
-gpt_assistant(prompt_input = "Write a research idea about using text data to understand human behaviour:"
-    , temperature = 0.8
-    , n = 10
-    , max_tokens = 150)
-
- ## For fully reproducible results, we need `temperature = 0`, e.g.:
- gpt_assistant(prompt_input = "Finish this sentence:/n There is no easier way to learn Julia than"
-     , temperature = 0.0
-     , max_tokens = 50)
-
- ## The same example with a different GPT-3 model:
- gpt_assistant(prompt_input = "Finish this sentence:/n There is no easier way to learn Julia than"
-     , model = "gpt-4o-mini"
-     , temperature = 0.0
-     , max_tokens = 50)
+create_gpt_thread()
 
 """
 function create_gpt_assistant(
+    n="Default Assistant",
+    i="Assist in a variety of tasks including scheduling, statistical coding, and brainstorming."
+    ;
+    name = n,
+    instructions = i,
+    model = "gpt-4o-mini",
+    tools = ["code_interpreter"],
+    output_type = "complete",
+    verbose = true,
+)
+    check_api_exists()
+    verbose ? println("Using $model") : true
+
+    tooldict = []
+    for t in tools
+        tooldict = vcat(tooldict, Dict("type" => t))
+    end
+
+    parameter_list = Dict(
+        "name" => name,
+        "instructions" => instructions,
+        "tools" => tooldict,
+        "model" => model,
+    )
+
+    thisurl = url.assistants
+    deletenothingkeys!(parameter_list)
+
+    headers =
+        Dict("Authorization" => "Bearer $api_key", 
+        "Content-Type" => "application/json", 
+        "OpenAI-Beta" => "assistants=v2"
+        )
+
+    request_base =
+        HTTP.request("POST", thisurl, body = JSON.json(parameter_list), headers = headers)
+    # request_base.status
+    if request_base.status == 200
+        request_content = JSON.parse(String(request_base.body))
+    end
+
+        core_output = DataFrame(
+            "name" => name,
+            "instructions" => instructions,
+            "gpt" => request_content["choices"][1]["message"]["content"],
+        )
+
+    meta_output = Dict(
+        "request_id" => request_content["id"],
+        "object" => request_content["object"],
+        "model" => request_content["model"],
+        "param_name" => name,
+        "param_instructions" => instructions,
+        "param_tool" => tool,
+        "param_model" => model,
+        "tools" => request_content["tools"],
+        "resources" => request_content["tool_resources"],
+        "tok_usage_prompt" => request_content["usage"]["prompt_tokens"],
+        "tok_usage_completion" => request_content["usage"]["completion_tokens"],
+        "tok_usage_total" => request_content["usage"]["total_tokens"],
+    )
+
+    if output_type == "complete"
+        output = (core_output, meta_output)
+    elseif output_type == "meta"
+        output = meta_output
+    elseif output_type == "text"
+        output = core_output
+    end
+    return (output)
+end
+
+
+create_gpt_assistant(;kwargs...
+) = create_gpt_assistant(
+    name, instructions; kwargs...
+);
+
+function create_gpt_thread()
+    check_api_exists()
+    thisurl = url.threads
+    headers =
+        Dict("Authorization" => "Bearer $api_key", 
+        "Content-Type" => "application/json", 
+        "OpenAI-Beta" => "assistants=v2"
+        )
+
+    request_base =
+        HTTP.request("POST", thisurl, body = JSON.json(""), headers = headers)
+    # request_base.status
+    if request_base.status == 200
+        request_content = JSON.parse(String(request_base.body))
+    end
+        core_output = DataFrame(
+            "gpt" => request_content["choices"][1]["message"]["content"],
+        )
+
+    meta_output = Dict(
+        "request_id" => request_content["id"],
+        "object" => request_content["object"],
+        "model" => request_content["model"],
+        "param_name" => name,
+        "param_instructions" => instructions,
+        "param_tool" => tool,
+        "param_model" => model,
+        "tok_usage_prompt" => request_content["usage"]["prompt_tokens"],
+        "tok_usage_completion" => request_content["usage"]["completion_tokens"],
+        "tok_usage_total" => request_content["usage"]["total_tokens"],
+    )
+
+    if output_type == "complete"
+        output = (core_output, meta_output)
+    elseif output_type == "meta"
+        output = meta_output
+    elseif output_type == "text"
+        output = core_output
+    end
+    return (output)
+end
+
+
+function instruct_gpt_assistant(
     p;
-    prompt_input = p,
+    name = raw"Default assistant",
+    instructions = raw"You perform a variety of administrative tasks",
     model = "gpt-4o-mini",
     output_type = "complete",
-    instructions = raw"You use the ChatGPT defaults",
     tools = ["code_interpreter"],
     suffix = nothing,
     max_tokens = 100,
@@ -93,15 +209,11 @@ function create_gpt_assistant(
         )
     end
 
-    messages = [
-        Dict("role" => "user", "content" => prompt_input),
-        Dict("role" => "developer", "content" => instructions),
-    ]
-
-
 
     parameter_list = Dict(
-        "messages" => messages,
+        "name" => name,
+        "instructions" => instructions,
+        "tools" => tools,
         "model" => model,
         "suffix" => suffix,
         "max_tokens" => max_tokens,
@@ -119,7 +231,10 @@ function create_gpt_assistant(
     deletenothingkeys!(parameter_list)
 
     headers =
-        Dict("Authorization" => "Bearer $api_key", "Content-Type" => "application/json", "OpenAI-Beta" => "assistants=v2")
+        Dict("Authorization" => "Bearer $api_key", 
+        "Content-Type" => "application/json", 
+        "OpenAI-Beta" => "assistants=v2"
+        )
 
     request_base =
         HTTP.request("POST", thisurl, body = JSON.json(parameter_list), headers = headers)
@@ -172,9 +287,3 @@ function create_gpt_assistant(
     end
     return (output)
 end
-
-
-create_gpt_assistant(;kwargs...
-) = gpt_assistant(
-    prompt_input; kwargs...
-);

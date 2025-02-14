@@ -20,19 +20,22 @@ import DataFrames: DataFrame
 ##
 ##############################################################################
 
-export  #gpt_single_embedding,
+export  # convenience calls ("API")
         chatgpt,
         dalle,
-        listgptmodels,
-        gptmodelinfo,
-        gpt_assistant,
-        gptupload,
+        # underlying calls
         gpt_single_completion,
         gpt_single_image,
         gpt_single_image_edit,
-        gpt_single_image_variations,
-        #gpt_completions,
-        #gpt_embeddings,
+        gpt_single_image_variations,        
+        # assistants
+        create_gpt_assistant,
+        create_gpt_thread,
+        gptupload,
+        # info
+        listgptmodels,
+        gptmodelinfo,
+        # Utils
         gpt_authenticate,
         check_apikey_form,
         deletenothingkeys!,

@@ -56,17 +56,21 @@ end
 
 
 """
+# 
 using GPT
+gpt_authenticate("src/_secret_key")
+
 imgFile = expanduser("~/temp/testimg_gen1.png")
 filesize(imgFile)
-gptupload(file, purpose)
+gptupload(imgFile, "none")
 """
-function gptupload(file, purpose)
+function gptupload(file, purpose; verbose=true)
   headers = ["Authorization" => "Bearer $api_key", "Content-Type" => "multipart/form-data"]
-  thisurl = url.files
+  verbose ? println("Uploading file $file") : true
+  thisurl = url.files_upload
   parameter_list = Dict(
     "purpose" => purpose,
-    "file" => open(file)
+    "file" => open(file, "r")
   )
   request_base =
   HTTP.request("POST", thisurl, body = HTTP.Form(collect(parameter_list)), headers = headers)
