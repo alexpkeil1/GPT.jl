@@ -257,102 +257,30 @@ function create_gpt_thread(; output_type = "complete", verbose = true)
     return (output)
 end
 
-
-function instruct_gpt_assistant(
-    p;
-    name = raw"Default assistant",
-    instructions = raw"You perform a variety of administrative tasks",
-    model = "gpt-4o-mini",
-    output_type = "complete",
-    tools = ["code_interpreter"],
-    suffix = nothing,
-    max_tokens = 100,
-    temperature = 0.9,
-    top_p = 1,
-    n = 1,
-    logprobs = nothing,
-    stop = nothing,
-    presence_penalty = 0,
-    frequency_penalty = 0,
-    verbose = true,
-)
+function get_gpt_thread(t; output_type = "complete", verbose = true)
     check_api_exists()
-    verbose ? println("Using $model") : true
-
-    if (temperature == 0) && (n > 1)
-        n = 1
-        message(
-            "You are running the deterministic model, so `n` was set to 1 to avoid unnecessary token quota usage.",
-        )
-    end
-
-
-    parameter_list = Dict(
-        "name" => name,
-        "instructions" => instructions,
-        "tools" => tools,
-        "model" => model,
-        "suffix" => suffix,
-        "max_tokens" => max_tokens,
-        "temperature" => temperature,
-        "top_p" => top_p,
-        "n" => n,
-        "logprobs" => logprobs,
-        "stop" => stop,
-        "presence_penalty" => presence_penalty,
-        "frequency_penalty" => frequency_penalty,
-    )
-
-    chatmodels = ["gpt-4o-mini"]
-    thisurl = url.assistants
-    deletenothingkeys!(parameter_list)
-
+    verbose ? println("Creating thread") : true
+    thisurl = url.threads
+    queryurl = thisurl * "/$t"
     headers = Dict(
         "Authorization" => "Bearer $api_key",
         "Content-Type" => "application/json",
         "OpenAI-Beta" => "assistants=v2",
     )
 
-    request_base =
-        HTTP.request("POST", thisurl, body = JSON.json(parameter_list), headers = headers)
+    request_base = HTTP.request("GET", queryurl, body = JSON.json(""), headers = headers)
     # request_base.status
     if request_base.status == 200
         request_content = JSON.parse(String(request_base.body))
     end
-
-    if n == 1
-        core_output = DataFrame(
-            "n" => 1,
-            "prompt" => prompt_input,
-            "gpt" => request_content["choices"][1]["message"]["content"],
-        )
-    elseif n > 1
-        core_output =
-            DataFrame("n" => 1:n, "prompt" => fill(prompt_input, n), "gpt" => fill("", n))
-        for i = 1:n
-            core_output.gpt[i] = request_content["choices"][i]["text"]
-        end
-    end
-
+    core_output =
+        DataFrame("id" => request_content["id"], "gpt" => request_content["object"])
 
     meta_output = Dict(
         "request_id" => request_content["id"],
         "object" => request_content["object"],
-        "model" => request_content["model"],
-        "param_prompt" => prompt_input,
-        "param_model" => model,
-        "param_suffix" => suffix,
-        "param_max_tokens" => max_tokens,
-        "param_temperature" => temperature,
-        "param_top_p" => top_p,
-        "param_n" => n,
-        "param_logprobs" => logprobs,
-        "param_stop" => stop,
-        "param_presence_penalty" => presence_penalty,
-        "param_frequency_penalty" => frequency_penalty,
-        "tok_usage_prompt" => request_content["usage"]["prompt_tokens"],
-        "tok_usage_completion" => request_content["usage"]["completion_tokens"],
-        "tok_usage_total" => request_content["usage"]["total_tokens"],
+        "metadata" => request_content["metadata"],
+        "tool_resources" => request_content["tool_resources"],
     )
 
     if output_type == "complete"
@@ -364,3 +292,191 @@ function instruct_gpt_assistant(
     end
     return (output)
 end
+
+function modify_gpt_thread(t; tool_resources=nothing, output_type = "complete", verbose = true)
+    # not yet finished: need to figure out how to modify tool_resources
+    check_api_exists()
+    verbose ? println("Creating thread") : true
+    thisurl = url.threads
+    queryurl = thisurl * "/$t"
+    headers = Dict(
+        "Authorization" => "Bearer $api_key",
+        "Content-Type" => "application/json",
+        "OpenAI-Beta" => "assistants=v2",
+    )
+    if !isnothing(tool_resources)
+        tooldict = []
+        for t in tool_resources
+            tooldict = vcat(tooldict, Dict("type" => t))
+        end
+    else
+        tooldict = tools
+    end
+
+
+    request_base = HTTP.request("POST", queryurl, body = JSON.json(""), headers = headers)
+    # request_base.status
+    if request_base.status == 200
+        request_content = JSON.parse(String(request_base.body))
+    end
+
+    core_output =
+        DataFrame("id" => request_content["id"], "gpt" => request_content["object"])
+
+    meta_output = Dict(
+        "request_id" => request_content["id"],
+        "object" => request_content["object"],
+        "metadata" => request_content["metadata"],
+        "tool_resources" => request_content["tool_resources"],
+    )
+
+    if output_type == "complete"
+        output = (core_output, meta_output)
+    elseif output_type == "meta"
+        output = meta_output
+    elseif output_type == "text"
+        output = core_output
+    end
+    return (output)
+end
+
+
+function add_gpt_message(; thread_id="", role="user", content="", attachments=nothing, output_type = "complete", verbose = true)
+    # not yet finished: need to figure out how to modify tool_resources
+    check_api_exists()
+    verbose ? println("Adding message to thread:$thread_id") : true
+    thisurl = url.threads
+    queryurl = thisurl * "/$thread_id/messages"
+    headers = Dict(
+        "Authorization" => "Bearer $api_key",
+        "Content-Type" => "application/json",
+        "OpenAI-Beta" => "assistants=v2",
+    )
+
+    parameter_list = Dict(
+        "role" => role,
+        "content" => content,
+        "attachments" => attachments,
+    )
+
+    deletenothingkeys!(parameter_list)
+
+
+    request_base = HTTP.request("POST", queryurl, body = JSON.json(parameter_list), headers = headers)
+    # request_base.status
+    if request_base.status == 200
+        request_content = JSON.parse(String(request_base.body))
+    end
+
+    core_output =
+        DataFrame("id" => request_content["id"], "gpt" => request_content["object"])
+
+    meta_output = Dict(
+        "request_id" => request_content["id"],
+        "object" => request_content["object"],
+        "metadata" => request_content["metadata"],
+        "tool_resources" => request_content["tool_resources"],
+    )
+
+    if output_type == "complete"
+        output = (core_output, meta_output)
+    elseif output_type == "meta"
+        output = meta_output
+    elseif output_type == "text"
+        output = core_output
+    end
+    return (output)
+end
+
+function run_gpt_thread(; 
+    thread_id="", 
+    assistant_id="", 
+    model = "gpt-4o-mini",
+    reasoning_effort = raw"medium",
+    instructions = nothing, #over ride instructions on a per-run basis
+    additional_instructions = nothing, #over ride instructions on a per-run basis
+    tools = nothing, #over ride tools on a per-run basis
+    metadata = nothing,
+    stream = false,
+    temperature = 0.9,
+    top_p = 1,
+    max_prompt_tokens = nothing,
+    max_completion_tokens = 100,
+    truncation_strategy = nothing,
+    tool_choice = nothing,
+    output_type = "complete", 
+    verbose = true)
+    # not yet finished: need to figure out how to modify tool_resources
+    check_api_exists()
+    verbose ? println("Running thread:$thread_id") : true
+    thisurl = url.threads
+    queryurl = thisurl * "/$thread_id/runs"
+    headers = Dict(
+        "Authorization" => "Bearer $api_key",
+        "Content-Type" => "application/json",
+        "OpenAI-Beta" => "assistants=v2",
+    )
+
+    if !isnothing(tools)
+        tooldict = []
+        for t in tools
+            tooldict = vcat(tooldict, Dict("type" => t))
+        end
+    else
+        tooldict = tools
+    end
+
+
+    messages = [
+        Dict("role" => "user", "content" => prompt_input),
+        Dict("role" => "developer", "content" => devmessage),
+    ]
+
+    parameter_list = Dict(
+        "thread_id" => thread_id, 
+        "assistant_id" => assistant_id, 
+        "model" => model,
+        "reasoning_effort" => reasoning_effort,
+        "instructions" => instructions, 
+        "additional_instructions" => additional_instructions, 
+        "tools" => tooldict, 
+        "metadata" => metadata,
+        "stream" => stream,
+        "temperature" => temperature,
+        "top_p" => top_p,
+        "max_prompt_tokens" => max_prompt_tokens,
+        "max_completion_tokens" => max_completion_tokens,
+        "truncation_strategy" => truncation_strategy,
+        "tool_choice" => tool_choice,
+        )
+
+    deletenothingkeys!(parameter_list)
+
+
+    request_base = HTTP.request("POST", queryurl, body = JSON.json(parameter_list), headers = headers)
+    # request_base.status
+    if request_base.status == 200
+        request_content = JSON.parse(String(request_base.body))
+    end
+
+    core_output =
+        DataFrame("id" => request_content["id"], "gpt" => request_content["object"])
+
+    meta_output = Dict(
+        "request_id" => request_content["id"],
+        "object" => request_content["object"],
+        "metadata" => request_content["metadata"],
+        "tool_resources" => request_content["tool_resources"],
+    )
+
+    if output_type == "complete"
+        output = (core_output, meta_output)
+    elseif output_type == "meta"
+        output = meta_output
+    elseif output_type == "text"
+        output = core_output
+    end
+    return (output)
+end
+
+run_gpt_thread(tid, aid;kwargs...) = run_gpt_thread(;thread_id=tid, assistant_id=aid, kwargs...)
