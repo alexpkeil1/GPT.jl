@@ -69,7 +69,7 @@ function gpt_reasoning(
     p;
     prompt_input = p,
     model = "o1-mini", # "o1"
-    reasoning_effort = "medium", # not yet implemented?
+    reasoning_effort = "medium", # implemented in o3, which may not be available
     output_type = "complete",
     suffix = nothing,
     max_completion_tokens = 25000, # recommended in API docs
@@ -80,10 +80,10 @@ function gpt_reasoning(
     stop = nothing,
     presence_penalty = 0,
     frequency_penalty = 0,
-    verbose = false,
+    verbose = true,
 )
     check_api_exists()
-    verbose ? println("Using $model") : true
+    verbose ? println("Reasoning using $model") : true
 
     if (temperature == 0) && (n > 1)
         n = 1
