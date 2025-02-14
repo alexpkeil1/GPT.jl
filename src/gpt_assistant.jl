@@ -52,8 +52,9 @@
  # Once authenticated:
 
  ## Create an assistant
- asst = GPT.create_gpt_assistant("Admin",
-                      "Assist in a variety of tasks including scheduling, statistical coding, and brainstorming.";
+ name = "Admin"
+ instructions = "Assist in a variety of tasks including scheduling, statistical coding, and brainstorming."
+ asst = GPT.create_gpt_assistant(name, instructions;
                       tools = ["code_interpreter", "file_search"])
 
 create_gpt_thread()
@@ -100,11 +101,11 @@ function create_gpt_assistant(
     if request_base.status == 200
         request_content = JSON.parse(String(request_base.body))
     end
-
+    println(request_content)
         core_output = DataFrame(
             "name" => name,
             "instructions" => instructions,
-            "gpt" => request_content["choices"][1]["message"]["content"],
+            "assistantID" => request_content["id"],
         )
 
     meta_output = Dict(
