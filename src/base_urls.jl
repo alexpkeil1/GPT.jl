@@ -10,7 +10,7 @@ const url = NamedTuple([
   :variations=>"https://api.openai.com/v1/images/variations", 
   :fine_tune=>"https://api.openai.com/v1/fine-tunes",
   :assistants=>"https://api.openai.com/v1/assistants",
-  :file_upload=>"https://api.openai.com/v1/files",
+  :files=>"https://api.openai.com/v1/files",
   :fine_tuning=>"https://api.openai.com/v1/fine_tuning/jobs"
   ])
   

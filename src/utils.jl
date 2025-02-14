@@ -56,13 +56,14 @@ end
 
 
 """
+using GPT
 imgFile = expanduser("~/temp/testimg_gen1.png")
 filesize(imgFile)
 gptupload(file, purpose)
 """
 function gptupload(file, purpose)
   headers = ["Authorization" => "Bearer $api_key", "Content-Type" => "multipart/form-data"]
-  thisurl = url.file_upload
+  thisurl = url.files
   parameter_list = Dict(
     "purpose" => purpose,
     "file" => open(file)
