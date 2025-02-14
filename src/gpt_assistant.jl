@@ -469,12 +469,6 @@ function retrieve_gpt_run(;
         "OpenAI-Beta" => "assistants=v2",
     )
     #parameter_list = makemetadata(Dict(kwargs...), ["tools"])
-    if isnothing(match(r"o[3-9]+", model))
-        reasoning_effort = nothing
-        verbose ? println("Removing reasoning_effort") : true
-    end
-
-    deletenothingkeys!(parameter_list)
     request_base =
         HTTP.request("GET", queryurl, headers = headers)
     # request_base.status
