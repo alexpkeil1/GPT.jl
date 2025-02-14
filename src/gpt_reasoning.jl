@@ -91,7 +91,7 @@ function gpt_reasoning(
             "You are running the deterministic model, so `n` was set to 1 to avoid unnecessary token quota usage.",
         )
     end
-    if (model[1:2]=="o1")
+    if isnothing(match(r"o[3-9]+", model))
         reasoning_effort = nothing
         verbose ? println("Removing reasoning_effort") : true
     end

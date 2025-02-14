@@ -402,7 +402,7 @@ function run_gpt_thread(;
         "OpenAI-Beta" => "assistants=v2",
     )
     #parameter_list = makemetadata(Dict(kwargs...), ["tools"])
-    if (model[1:2]=="o1")
+    if isnothing(match(r"o[3-9]+", model))
         reasoning_effort = nothing
         verbose ? println("Removing reasoning_effort") : true
     end
