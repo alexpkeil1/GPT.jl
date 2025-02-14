@@ -152,20 +152,15 @@ function create_gpt_thread()
         request_content = JSON.parse(String(request_base.body))
     end
         core_output = DataFrame(
-            "gpt" => request_content["choices"][1]["message"]["content"],
+            "id" => request_content["id"],
+            "gpt" => request_content["object"]
         )
 
     meta_output = Dict(
         "request_id" => request_content["id"],
         "object" => request_content["object"],
-        "model" => request_content["model"],
-        "param_name" => name,
-        "param_instructions" => instructions,
-        "param_tool" => tool,
-        "param_model" => model,
-        "file_ids" => request_content["file_ids"],
-        "file_search" => request_content["file_search"],
-        "vector_store_ids" => request_content["vector_store_ids"]
+        "metadata" => request_content["metadata"],
+        "tool_resources" => request_content["tool_resources"]
     )
 
     if output_type == "complete"
