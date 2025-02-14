@@ -293,7 +293,12 @@ function get_gpt_thread(t; output_type = "complete", verbose = true)
     return (output)
 end
 
-function modify_gpt_thread(t; tool_resources=nothing, output_type = "complete", verbose = true)
+function modify_gpt_thread(
+    t;
+    tool_resources = nothing,
+    output_type = "complete",
+    verbose = true,
+)
     # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
     verbose ? println("Creating thread") : true
@@ -341,7 +346,14 @@ function modify_gpt_thread(t; tool_resources=nothing, output_type = "complete", 
 end
 
 
-function add_gpt_message(; thread_id="", role="user", content="", attachments=nothing, output_type = "complete", verbose = true)
+function add_gpt_message(;
+    thread_id = "",
+    role = "user",
+    content = "",
+    attachments = nothing,
+    output_type = "complete",
+    verbose = true,
+)
     # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
     verbose ? println("Adding message to thread:$thread_id") : true
@@ -353,16 +365,14 @@ function add_gpt_message(; thread_id="", role="user", content="", attachments=no
         "OpenAI-Beta" => "assistants=v2",
     )
 
-    parameter_list = Dict(
-        "role" => role,
-        "content" => content,
-        "attachments" => attachments,
-    )
+    parameter_list =
+        Dict("role" => role, "content" => content, "attachments" => attachments)
 
     deletenothingkeys!(parameter_list)
 
 
-    request_base = HTTP.request("POST", queryurl, body = JSON.json(parameter_list), headers = headers)
+    request_base =
+        HTTP.request("POST", queryurl, body = JSON.json(parameter_list), headers = headers)
     # request_base.status
     if request_base.status == 200
         request_content = JSON.parse(String(request_base.body))
@@ -372,10 +382,19 @@ function add_gpt_message(; thread_id="", role="user", content="", attachments=no
         DataFrame("id" => request_content["id"], "gpt" => request_content["object"])
 
     meta_output = Dict(
-        "request_id" => request_content["id"],
-        "object" => request_content["object"],
+        "assistant_id" => request_content["assistant_id"],
+        "thread_id" => request_content["thread_id"],
+        "created_at" => request_content["created_at"],
+        "thread_idparam" => thread_id,
+        "status" => request_content["status"],
+        "incomplete_details" => request_content["incomplete_details"],
+        "completed_at" => request_content["completed_at"],
+        "incomplete_at" => request_content["incomplete_at"],
+        "role" => request_content["role"],
+        "content" => request_content["content"],
+        "run_id" => request_content["run_id"],
+        "attachments" => request_content["attachments"],
         "metadata" => request_content["metadata"],
-        "tool_resources" => request_content["tool_resources"],
     )
 
     if output_type == "complete"
@@ -388,9 +407,9 @@ function add_gpt_message(; thread_id="", role="user", content="", attachments=no
     return (output)
 end
 
-function run_gpt_thread(; 
-    thread_id="", 
-    assistant_id="", 
+function run_gpt_thread(;
+    thread_id = "",
+    assistant_id = "",
     model = "gpt-4o-mini",
     reasoning_effort = raw"medium",
     instructions = nothing, #over ride instructions on a per-run basis
@@ -404,8 +423,9 @@ function run_gpt_thread(;
     max_completion_tokens = 100,
     truncation_strategy = nothing,
     tool_choice = nothing,
-    output_type = "complete", 
-    verbose = true)
+    output_type = "complete",
+    verbose = true,
+)
     # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
     verbose ? println("Running thread:$thread_id") : true
@@ -433,13 +453,13 @@ function run_gpt_thread(;
     ]
 
     parameter_list = Dict(
-        "thread_id" => thread_id, 
-        "assistant_id" => assistant_id, 
+        "thread_id" => thread_id,
+        "assistant_id" => assistant_id,
         "model" => model,
         "reasoning_effort" => reasoning_effort,
-        "instructions" => instructions, 
-        "additional_instructions" => additional_instructions, 
-        "tools" => tooldict, 
+        "instructions" => instructions,
+        "additional_instructions" => additional_instructions,
+        "tools" => tooldict,
         "metadata" => metadata,
         "stream" => stream,
         "temperature" => temperature,
@@ -448,12 +468,13 @@ function run_gpt_thread(;
         "max_completion_tokens" => max_completion_tokens,
         "truncation_strategy" => truncation_strategy,
         "tool_choice" => tool_choice,
-        )
+    )
 
     deletenothingkeys!(parameter_list)
 
 
-    request_base = HTTP.request("POST", queryurl, body = JSON.json(parameter_list), headers = headers)
+    request_base =
+        HTTP.request("POST", queryurl, body = JSON.json(parameter_list), headers = headers)
     # request_base.status
     if request_base.status == 200
         request_content = JSON.parse(String(request_base.body))
@@ -479,4 +500,5 @@ function run_gpt_thread(;
     return (output)
 end
 
-run_gpt_thread(tid, aid;kwargs...) = run_gpt_thread(;thread_id=tid, assistant_id=aid, kwargs...)
+run_gpt_thread(tid, aid; kwargs...) =
+    run_gpt_thread(; thread_id = tid, assistant_id = aid, kwargs...)
