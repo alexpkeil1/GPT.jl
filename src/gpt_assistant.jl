@@ -166,7 +166,7 @@ function create_gpt_thread()
         "file_ids" => request_content["file_ids"],
         "file_search" => request_content["file_search"],
         "vector_store_ids" => request_content["vector_store_ids"],
-        #"tok_usage_total" => request_content["usage"]["total_tokens"],
+        "tok_usage_total" => request_content["usage"]["total_tokens"],
     )
 
     if output_type == "complete"
