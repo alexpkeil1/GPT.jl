@@ -39,6 +39,7 @@ export  # convenience calls ("API")
         delete_gpt_assistant,
         run_gpt_thread,
         retrieve_gpt_run,
+        retrieve_gpt_thread,
         # info
         listgptmodels,
         gptmodelinfo,
