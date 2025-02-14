@@ -74,9 +74,13 @@ function create_gpt_assistant(;
     check_api_exists()
     verbose ? println("Using $model") : true
 
-    tooldict = []
-    for t in tools
-        tooldict = vcat(tooldict, Dict("type" => t))
+    if !isnothing(tools)
+        tooldict = []
+        for t in tools
+            tooldict = vcat(tooldict, Dict("type" => t))
+        end
+    else
+        tooldict = tools
     end
 
     parameter_list = Dict(
