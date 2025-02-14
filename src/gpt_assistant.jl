@@ -136,8 +136,9 @@ create_gpt_assistant(n,i;kwargs...
 ) = create_gpt_assistant(; name=n, instructions=i, kwargs...
 );
 
-function create_gpt_thread()
+function create_gpt_thread(;output_type = "complete",verbose = true)
     check_api_exists()
+    verbose ? println("Creating thread") : true
     thisurl = url.threads
     headers =
         Dict("Authorization" => "Bearer $api_key", 
