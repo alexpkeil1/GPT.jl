@@ -141,19 +141,31 @@ create_gpt_assistant(n, i; kwargs...) =
     create_gpt_assistant(; name = n, instructions = i, kwargs...);
 
 function list_gpt_assistants(;
+        limit=20,
+        order="desc",
+        after = nothing,
+        before = nothing,
         output_type = "complete",
         verbose = true,
     )
         check_api_exists()
         verbose ? println("Checking for GPT assistants") : true
-        thisurl = url.assistants    
+        thisurl = url.assistants
+        query = "?"
+        kws = ["limit", "order", "after", "before"]
+        ps = [limit, order, after, before]
+        for i in 1:length(kws)
+            qq = isnothing(ps[i]) ? "" : "&$(kws[i])=$(ps[i])" 
+                query*=qq 
+        end    
+        queryurl = thisurl * query
         headers = Dict(
             "Authorization" => "Bearer $api_key",
             "Content-Type" => "application/json",
             "OpenAI-Beta" => "assistants=v2",
         )
         request_base =
-            HTTP.request("POST", thisurl, headers = headers)
+            HTTP.request("GET", queryurl, headers = headers)
         # request_base.status
         if request_base.status == 200
             request_content = JSON.parse(String(request_base.body))
