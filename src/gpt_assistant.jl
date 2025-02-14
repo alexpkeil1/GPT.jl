@@ -116,9 +116,12 @@ function create_gpt_assistant(
         "param_model" => model,
         "tools" => request_content["tools"],
         "resources" => request_content["tool_resources"],
-        "tok_usage_prompt" => request_content["usage"]["prompt_tokens"],
-        "tok_usage_completion" => request_content["usage"]["completion_tokens"],
-        "tok_usage_total" => request_content["usage"]["total_tokens"],
+        "file_ids" => request_content["file_ids"],
+        "file_search" => request_content["file_search"],
+        "vector_store_ids" => request_content["vector_store_ids"]
+        #"tok_usage_prompt" => request_content["usage"]["prompt_tokens"],
+        #"tok_usage_completion" => request_content["usage"]["completion_tokens"],
+        #"tok_usage_total" => request_content["usage"]["total_tokens"],
     )
 
     if output_type == "complete"
