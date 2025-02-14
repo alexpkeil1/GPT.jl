@@ -141,7 +141,6 @@ function gpt_single_completion(
         end
     end
 
-
     meta_output = Dict(
         "request_id" => request_content["id"],
         "object" => request_content["object"],

@@ -74,19 +74,10 @@ function create_gpt_assistant(;
     check_api_exists()
     verbose ? println("Using $model") : true
 
-    if !isnothing(tools)
-        tooldict = []
-        for t in tools
-            tooldict = vcat(tooldict, Dict("type" => t))
-        end
-    else
-        tooldict = tools
-    end
-
     parameter_list = Dict(
         "name" => name,
         "instructions" => instructions,
-        "tools" => tooldict,
+        "tools" => maketools(tools),
         "model" => model,
     )
 
@@ -111,20 +102,7 @@ function create_gpt_assistant(;
         "assistantID" => request_content["id"],
     )
 
-    meta_output = Dict(
-        "request_id" => request_content["id"],
-        "object" => request_content["object"],
-        "model" => request_content["model"],
-        "param_name" => name,
-        "param_instructions" => instructions,
-        "param_tool" => tools,
-        "param_model" => model,
-        "tools" => request_content["tools"],
-        "resources" => request_content["tool_resources"],
-        #"tok_usage_prompt" => request_content["usage"]["prompt_tokens"],
-        #"tok_usage_completion" => request_content["usage"]["completion_tokens"],
-        #"tok_usage_total" => request_content["usage"]["total_tokens"],
-    )
+    meta_output = makemetadata(request_content, ["id"])
 
     if output_type == "complete"
         output = (core_output, meta_output)
@@ -172,13 +150,7 @@ function list_gpt_assistants(;
     #
     core_output = DataFrame(request_content["data"])
 
-    meta_output = Dict(
-        "first_id" => request_content["first_id"],
-        "last_id" => request_content["last_id"],
-        "object" => request_content["object"],
-        "query" => queryurl,
-        "has_more" => request_content["has_more"],
-    )
+    meta_output = makemetadata(request_content, ["data"])
 
     if output_type == "complete"
         output = (core_output, meta_output)
@@ -240,12 +212,7 @@ function create_gpt_thread(; output_type = "complete", verbose = true)
     core_output =
         DataFrame("id" => request_content["id"], "gpt" => request_content["object"])
 
-    meta_output = Dict(
-        "request_id" => request_content["id"],
-        "object" => request_content["object"],
-        "metadata" => request_content["metadata"],
-        "tool_resources" => request_content["tool_resources"],
-    )
+    meta_output = makemetadata(request_content, ["id", "object"])
 
     if output_type == "complete"
         output = (core_output, meta_output)
@@ -276,12 +243,7 @@ function get_gpt_thread(t; output_type = "complete", verbose = true)
     core_output =
         DataFrame("id" => request_content["id"], "gpt" => request_content["object"])
 
-    meta_output = Dict(
-        "request_id" => request_content["id"],
-        "object" => request_content["object"],
-        "metadata" => request_content["metadata"],
-        "tool_resources" => request_content["tool_resources"],
-    )
+    meta_output = makemetadata(request_content, ["id", "object"])
 
     if output_type == "complete"
         output = (core_output, meta_output)
@@ -309,15 +271,7 @@ function modify_gpt_thread(
         "Content-Type" => "application/json",
         "OpenAI-Beta" => "assistants=v2",
     )
-    if !isnothing(tool_resources)
-        tooldict = []
-        for t in tool_resources
-            tooldict = vcat(tooldict, Dict("type" => t))
-        end
-    else
-        tooldict = tools
-    end
-
+    tooldict = maketools(tool_resources)
 
     request_base = HTTP.request("POST", queryurl, body = JSON.json(""), headers = headers)
     # request_base.status
@@ -328,12 +282,7 @@ function modify_gpt_thread(
     core_output =
         DataFrame("id" => request_content["id"], "gpt" => request_content["object"])
 
-    meta_output = Dict(
-        "request_id" => request_content["id"],
-        "object" => request_content["object"],
-        "metadata" => request_content["metadata"],
-        "tool_resources" => request_content["tool_resources"],
-    )
+    meta_output = makemetadata(request_content, ["id", "object"])
 
     if output_type == "complete"
         output = (core_output, meta_output)
@@ -381,21 +330,7 @@ function add_gpt_message(;
     core_output =
         DataFrame("id" => request_content["id"], "gpt" => request_content["object"])
 
-    meta_output = Dict(
-        "assistant_id" => request_content["assistant_id"],
-        "thread_id" => request_content["thread_id"],
-        "created_at" => request_content["created_at"],
-        "thread_idparam" => thread_id,
-        "status" => request_content["status"],
-        "incomplete_details" => request_content["incomplete_details"],
-        "completed_at" => request_content["completed_at"],
-        "incomplete_at" => request_content["incomplete_at"],
-        "role" => request_content["role"],
-        "content" => request_content["content"],
-        "run_id" => request_content["run_id"],
-        "attachments" => request_content["attachments"],
-        "metadata" => request_content["metadata"],
-    )
+    meta_output = makemetadata(request_content, ["id", "object"])
 
     if output_type == "complete"
         output = (core_output, meta_output)
@@ -437,16 +372,6 @@ function run_gpt_thread(;
         "OpenAI-Beta" => "assistants=v2",
     )
 
-    if !isnothing(tools)
-        tooldict = []
-        for t in tools
-            tooldict = vcat(tooldict, Dict("type" => t))
-        end
-    else
-        tooldict = tools
-    end
-
-
     messages = [
         Dict("role" => "user", "content" => prompt_input),
         Dict("role" => "developer", "content" => devmessage),
@@ -459,7 +384,7 @@ function run_gpt_thread(;
         "reasoning_effort" => reasoning_effort,
         "instructions" => instructions,
         "additional_instructions" => additional_instructions,
-        "tools" => tooldict,
+        "tools" => maketools(tools),
         "metadata" => metadata,
         "stream" => stream,
         "temperature" => temperature,
@@ -483,12 +408,7 @@ function run_gpt_thread(;
     core_output =
         DataFrame("id" => request_content["id"], "gpt" => request_content["object"])
 
-    meta_output = Dict(
-        "request_id" => request_content["id"],
-        "object" => request_content["object"],
-        "metadata" => request_content["metadata"],
-        "tool_resources" => request_content["tool_resources"],
-    )
+    meta_output = makemetadata(request_content, ["id", "object"])
 
     if output_type == "complete"
         output = (core_output, meta_output)
