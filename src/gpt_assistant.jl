@@ -105,7 +105,6 @@ function create_gpt_assistant(;
     if request_base.status == 200
         request_content = JSON.parse(String(request_base.body))
     end
-    println(request_content)
     core_output = DataFrame(
         "name" => name,
         "instructions" => instructions,
@@ -141,14 +140,56 @@ end
 create_gpt_assistant(n, i; kwargs...) =
     create_gpt_assistant(; name = n, instructions = i, kwargs...);
 
-list_gpt_assistants() = create_gpt_assistant(;
-    name = nothing,
-    instructions = nothing,
-    model = nothing,
-    tools = nothing,
-    output_type = "complete",
-    verbose = true,
-)
+function list_gpt_assistants(;
+        output_type = "complete",
+        verbose = true,
+    )
+        check_api_exists()
+        verbose ? println("Checking for GPT assistants") : true
+        thisurl = url.assistants    
+        headers = Dict(
+            "Authorization" => "Bearer $api_key",
+            "Content-Type" => "application/json",
+            "OpenAI-Beta" => "assistants=v2",
+        )
+        request_base =
+            HTTP.request("POST", thisurl, headers = headers)
+        # request_base.status
+        if request_base.status == 200
+            request_content = JSON.parse(String(request_base.body))
+        end
+        return(request_content)
+        #
+        core_output = DataFrame(
+            "name" => name,
+            "instructions" => instructions,
+            "assistantID" => request_content["id"],
+        )
+    
+        meta_output = Dict(
+            "request_id" => request_content["id"],
+            "object" => request_content["object"],
+            "model" => request_content["model"],
+            "param_name" => name,
+            "param_instructions" => instructions,
+            "param_tool" => tools,
+            "param_model" => model,
+            "tools" => request_content["tools"],
+            "resources" => request_content["tool_resources"],
+            #"tok_usage_prompt" => request_content["usage"]["prompt_tokens"],
+            #"tok_usage_completion" => request_content["usage"]["completion_tokens"],
+            #"tok_usage_total" => request_content["usage"]["total_tokens"],
+        )
+    
+        if output_type == "complete"
+            output = (core_output, meta_output)
+        elseif output_type == "meta"
+            output = meta_output
+        elseif output_type == "text"
+            output = core_output
+        end
+        return (output)
+    end
 
 function create_gpt_thread(; output_type = "complete", verbose = true)
     check_api_exists()
