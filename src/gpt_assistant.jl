@@ -234,7 +234,7 @@ function list_gpt_threads(; output_type = "complete", verbose = true)
         "OpenAI-Beta" => "assistants=v2",
     )
 
-    request_base = HTTP.request("GET", thisurl, body = JSON.json(""), headers = headers)
+    request_base = HTTP.request("GET", thisurl, headers = headers)
     # request_base.status
     if request_base.status == 200
         request_content = JSON.parse(String(request_base.body))
