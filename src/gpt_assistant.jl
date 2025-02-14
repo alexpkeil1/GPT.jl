@@ -61,11 +61,9 @@ create_gpt_thread()
 
 """
 function create_gpt_assistant(
-    n,
-    i
     ;
-    name = n,
-    instructions = i,
+    name = "Default",
+    instructions = "You do some admin tasks, such as scheduling",
     model = "gpt-4o-mini",
     tools = ["code_interpreter"],
     output_type = "complete",
@@ -114,7 +112,7 @@ function create_gpt_assistant(
         "model" => request_content["model"],
         "param_name" => name,
         "param_instructions" => instructions,
-        "param_tool" => tool,
+        "param_tool" => tools,
         "param_model" => model,
         "tools" => request_content["tools"],
         "resources" => request_content["tool_resources"],
@@ -134,9 +132,8 @@ function create_gpt_assistant(
 end
 
 
-create_gpt_assistant(;kwargs...
-) = create_gpt_assistant(
-    name, instructions; kwargs...
+create_gpt_assistant(n,i;kwargs...
+) = create_gpt_assistant(; name=n, instructions=i, kwargs...
 );
 
 function create_gpt_thread()
