@@ -65,37 +65,11 @@ filesize(imgFile)
 gptupload(imgFile, "assistants")
 # purpose: Use "assistants" for Assistants and Message files, "vision" for Assistants image file inputs, "batch" for Batch API, and "fine-tune" for Fine-tuning.
 file = expanduser("~/temp/testcsv.csv")
-purpose="assistants"
-headers =
-["Authorization" => "Bearer $api_key", "Content-Type" => "multipart/form-data"]
-headers =
-["Authorization" => "Bearer $api_key"]
-#verbose ? println("Uploading file $file") : true
-#thisurl = url.files_upload
-thisurl = url.files
-parameter_list = Dict("purpose" => purpose, "file" => read(file))
-parameter_list = Dict(:purpose => purpose, :file => open(file, "r"))
-request_base = HTTP.request(
-"POST",
-thisurl,
-body = HTTP.Form(parameter_list),
-headers = headers,
-)
-
-run(`curl https://api.openai.com/v1/files \
-  -H "Authorization: Bearer $api_key" \
-  -F purpose="assistants" \
-  -F file="@/Users/keilap/temp/testcsv.csv"`)
-
-#HTTP.request("POST", thisurl, body = JSON.json(parameter_list), headers = headers)
-if request_base.status == 200
-request_content = JSON.parse(String(request_base.body))
-end
-DataFrame(request_content)
-
+gptupload(file, "assistants")
+gptupload(file=file, purpose="assistants")
 
 """
-function gptupload(file, purpose; verbose = true)
+function gptupload(;file="", purpose=""; verbose = true)
     headers =
     #["Authorization" => "Bearer $api_key", "Content-Type" => "multipart/form-data"]
     ["Authorization" => "Bearer $api_key"]
@@ -114,6 +88,8 @@ function gptupload(file, purpose; verbose = true)
     end
     DataFrame(request_content)
 end
+gptupload(f,p; kwargs...) = gptupload(file=f, purpose=p; kwargs...)
+
 
 """
 request_content = Dict("run" => 1)
