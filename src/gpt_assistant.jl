@@ -68,6 +68,14 @@ function create_gpt_assistant(;
     instructions = "You do some admin tasks, such as scheduling",
     model = "gpt-4o-mini",
     tools = ["code_interpreter"],
+    reasoning_effort = nothing,
+    description = nothing,
+    tools = nothing,
+    tool_resources = nothing,
+    metadata=nothing,
+    temperature=nothing,
+    top_p=nothing,
+    response_format="auto",
     output_type = "complete",
     verbose = true,
 )
@@ -78,7 +86,13 @@ function create_gpt_assistant(;
         "name" => name,
         "instructions" => instructions,
         "tools" => maketools(tools),
-        "model" => model,
+        "reasoning_effort" => reasoning_effort,
+        "description" => description,
+        "tool_resources" => tool_resources,
+        "metadata" => metadata,
+        "temperature" => temperature,
+        "top_p" => top_p,
+        "response_format" => response_format,
     )
 
     thisurl = url.assistants
@@ -117,6 +131,77 @@ end
 
 create_gpt_assistant(n, i; kwargs...) =
     create_gpt_assistant(; name = n, instructions = i, kwargs...);
+
+function modify_gpt_assistant(;
+    assistant_id=nothing,
+    name = nothing,
+    instructions = nothing,
+    model = nothing,
+    reasoning_effort = nothing,
+    description = nothing,
+    tools = nothing,
+    tool_resources = nothing,
+    metadata=nothing,
+    temperature=nothing,
+    top_p=nothing,
+    response_format="auto",
+    output_type = "complete",
+    verbose = true,
+)
+    check_api_exists()
+    verbose ? println("Using $model") : true
+
+    parameter_list = Dict(
+        "name" => name,
+        "instructions" => instructions,
+        "tools" => maketools(tools),
+        "reasoning_effort" => reasoning_effort,
+        "description" => description,
+        "tool_resources" => tool_resources,
+        "metadata" => metadata,
+        "temperature" => temperature,
+        "top_p" => top_p,
+        "response_format" => response_format,
+    )
+
+    thisurl = url.assistants
+    query = joinpath(thisurl, assistant_id)
+    deletenothingkeys!(parameter_list)
+
+    headers = Dict(
+        "Authorization" => "Bearer $api_key",
+        "Content-Type" => "application/json",
+        "OpenAI-Beta" => "assistants=v2",
+    )
+
+    request_base =
+        HTTP.request("POST", query, body = JSON.json(parameter_list), headers = headers)
+    # request_base.status
+    if request_base.status == 200
+        request_content = JSON.parse(String(request_base.body))
+    end
+    core_output = DataFrame(
+        "name" => name,
+        "instructions" => instructions,
+        "assistantID" => request_content["id"],
+    )
+
+    meta_output = makemetadata(request_content, ["id"])
+
+    if output_type == "complete"
+        output = (core_output, meta_output)
+    elseif output_type == "meta"
+        output = meta_output
+    elseif output_type == "text"
+        output = core_output
+    end
+    return (output)
+end
+
+
+modify_gpt_assistant(aid; kwargs...) =
+    modify_gpt_assistant(; assitant_id=aid, kwargs...);
+
 
 function list_gpt_assistants(;
     limit = 20,
@@ -258,7 +343,7 @@ function get_gpt_thread(t; output_type = "complete", verbose = true)
     check_api_exists()
     verbose ? println("Creating thread") : true
     thisurl = url.threads
-    queryurl = thisurl * "/$t"
+    queryurl = joinpath(thisurl, t)
     headers = Dict(
         "Authorization" => "Bearer $api_key",
         "Content-Type" => "application/json",
@@ -295,7 +380,7 @@ function modify_gpt_thread(
     check_api_exists()
     verbose ? println("Creating thread") : true
     thisurl = url.threads
-    queryurl = thisurl * "/$t"
+    queryurl = joinpath(thisurl, t)
     headers = Dict(
         "Authorization" => "Bearer $api_key",
         "Content-Type" => "application/json",
@@ -337,7 +422,7 @@ function add_gpt_message(;
     check_api_exists()
     verbose ? println("Adding message to thread:$thread_id") : true
     thisurl = url.threads
-    queryurl = thisurl * "/$thread_id/messages"
+    queryurl = joinpath(thisurl, thread_id, "messages")
     headers = Dict(
         "Authorization" => "Bearer $api_key",
         "Content-Type" => "application/json",
@@ -395,7 +480,7 @@ function run_gpt_thread(;
     check_api_exists()
     verbose ? println("Running thread : $thread_id") : true
     thisurl = url.threads
-    queryurl = thisurl * "/$thread_id/runs"
+    queryurl = joinpath(thisurl, thread_id, "runs")
     headers = Dict(
         "Authorization" => "Bearer $api_key",
         "Content-Type" => "application/json",
@@ -462,15 +547,14 @@ function retrieve_gpt_run(;
     check_api_exists()
     verbose ? println("Retrieving run : $run_id") : true
     thisurl = url.threads
-    queryurl = thisurl * "/$thread_id/runs/$run_id"
+    queryurl = joinpath(thisurl, thread_id, "runs", run_id)
     headers = Dict(
         "Authorization" => "Bearer $api_key",
         "Content-Type" => "application/json",
         "OpenAI-Beta" => "assistants=v2",
     )
     #parameter_list = makemetadata(Dict(kwargs...), ["tools"])
-    request_base =
-        HTTP.request("GET", queryurl, headers = headers)
+    request_base = HTTP.request("GET", queryurl, headers = headers)
     # request_base.status
     if request_base.status == 200
         request_content = JSON.parse(String(request_base.body))
@@ -492,24 +576,19 @@ function retrieve_gpt_run(;
 end
 
 
-function retrieve_gpt_thread(;
-    thread_id = "",
-    output_type = "complete",
-    verbose = true,
-)
+function retrieve_gpt_thread(; thread_id = "", output_type = "complete", verbose = true)
     # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
     verbose ? println("Retrieving thread:$thread_id") : true
     thisurl = url.threads
-    queryurl = thisurl * "/$thread_id"
+    queryurl = joinpath(thisurl, thread_id)
     headers = Dict(
         "Authorization" => "Bearer $api_key",
         "Content-Type" => "application/json",
         "OpenAI-Beta" => "assistants=v2",
     )
     #parameter_list = makemetadata(Dict(kwargs...), ["tools"])
-    request_base =
-        HTTP.request("GET", queryurl, headers = headers)
+    request_base = HTTP.request("GET", queryurl, headers = headers)
     # request_base.status
     if request_base.status == 200
         request_content = JSON.parse(String(request_base.body))
@@ -530,35 +609,29 @@ function retrieve_gpt_thread(;
     return (output)
 end
 
-retrieve_gpt_thread(tid;kwargs...) = retrieve_gpt_thread(;thread_id=tid,kwargs...)
+retrieve_gpt_thread(tid; kwargs...) = retrieve_gpt_thread(; thread_id = tid, kwargs...)
 
 
 
-function retrieve_gpt_messages(;
-    thread_id = "",
-    output_type = "complete",
-    verbose = true,
-)
+function retrieve_gpt_messages(; thread_id = "", output_type = "complete", verbose = true)
     # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
     verbose ? println("Retrieving thread:$thread_id") : true
     thisurl = url.threads
-    queryurl = thisurl * "/$thread_id/messages"
+    queryurl = joinpath(thisurl, thread_id, "messages")
     headers = Dict(
         "Authorization" => "Bearer $api_key",
         "Content-Type" => "application/json",
         "OpenAI-Beta" => "assistants=v2",
     )
     #parameter_list = makemetadata(Dict(kwargs...), ["tools"])
-    request_base =
-        HTTP.request("GET", queryurl, headers = headers)
+    request_base = HTTP.request("GET", queryurl, headers = headers)
     # request_base.status
     if request_base.status == 200
         request_content = JSON.parse(String(request_base.body))
     end
 
-    core_output =
-        DataFrame("gpt" => request_content["object"])
+    core_output = DataFrame("gpt" => request_content["object"])
 
     meta_output = makemetadata(request_content, ["object"])
 
@@ -572,7 +645,7 @@ function retrieve_gpt_messages(;
     return (output)
 end
 
-retrieve_gpt_messages(tid;kwargs...) = retrieve_gpt_messages(;thread_id=tid,kwargs...)
+retrieve_gpt_messages(tid; kwargs...) = retrieve_gpt_messages(; thread_id = tid, kwargs...)
 
 
 
@@ -601,8 +674,8 @@ function add_gpt_vector_store(;
         "name" => name,
         "expires_after" => expires_after,
         "chunking_strategy" => chunking_strategy,
-        "metadata" => metadata
-        )
+        "metadata" => metadata,
+    )
 
     deletenothingkeys!(parameter_list)
     request_base =
@@ -626,3 +699,226 @@ function add_gpt_vector_store(;
     end
     return (output)
 end
+
+function modify_gpt_vector_store(;
+    vector_store_id = nothing,
+    name = nothing,
+    expires_after = nothing,
+    metadata = nothing,
+    output_type = "complete",
+    verbose = true,
+)
+    # not yet finished: need to figure out how to modify tool_resources
+    check_api_exists()
+    verbose ? println("Creating vector store") : true
+    thisurl = joinpath(url.vector_stores, vector_store_id)
+    headers = Dict(
+        "Authorization" => "Bearer $api_key",
+        "Content-Type" => "application/json",
+        "OpenAI-Beta" => "assistants=v2",
+    )
+
+    parameter_list = Dict(
+        #"vector_store_id" => vector_store_id,
+        "name" => name,
+        "expires_after" => expires_after,
+        "metadata" => metadata,
+    )
+
+    deletenothingkeys!(parameter_list)
+    request_base =
+        HTTP.request("POST", thisurl, body = JSON.json(parameter_list), headers = headers)
+    # request_base.status
+    if request_base.status == 200
+        request_content = JSON.parse(String(request_base.body))
+    end
+
+    core_output =
+        DataFrame("id" => request_content["id"], "gpt" => request_content["object"])
+
+    meta_output = makemetadata(request_content, ["id", "object"])
+
+    if output_type == "complete"
+        output = (core_output, meta_output)
+    elseif output_type == "meta"
+        output = meta_output
+    elseif output_type == "text"
+        output = core_output
+    end
+    return (output)
+end
+
+function delete_gpt_vector_store(;
+    vector_store_id = nothing,
+    name = nothing,
+    expires_after = nothing,
+    metadata = nothing,
+    output_type = "complete",
+    verbose = true,
+)
+    # not yet finished: need to figure out how to modify tool_resources
+    check_api_exists()
+    verbose ? println("Creating vector store") : true
+    thisurl = joinpath(url.vector_stores, vector_store_id)
+    headers = Dict(
+        "Authorization" => "Bearer $api_key",
+        "Content-Type" => "application/json",
+        "OpenAI-Beta" => "assistants=v2",
+    )
+
+    parameter_list = Dict(
+        #"vector_store_id" => vector_store_id,
+        "name" => name,
+        "expires_after" => expires_after,
+        "metadata" => metadata,
+    )
+
+    deletenothingkeys!(parameter_list)
+    request_base =
+        HTTP.request("DELETE", thisurl, body = JSON.json(parameter_list), headers = headers)
+    # request_base.status
+    if request_base.status == 200
+        request_content = JSON.parse(String(request_base.body))
+    end
+
+    core_output =
+        DataFrame("id" => request_content["id"], "gpt" => request_content["object"])
+
+    meta_output = makemetadata(request_content, ["id", "object"])
+
+    if output_type == "complete"
+        output = (core_output, meta_output)
+    elseif output_type == "meta"
+        output = meta_output
+    elseif output_type == "text"
+        output = core_output
+    end
+    return (output)
+end
+
+
+function retrieve_gpt_vectorstorefiles(;
+    vector_store_id = "",
+    file_id = "complete",
+    verbose = true,
+)
+    # not yet finished: need to figure out how to modify tool_resources
+    check_api_exists()
+    verbose ? println("Retrieving thread:$thread_id") : true
+    thisurl = url.vector_stores
+    queryurl = joinpath(thisurl, vector_store_id, "files", file_id)
+    headers = Dict(
+        "Authorization" => "Bearer $api_key",
+        "Content-Type" => "application/json",
+        "OpenAI-Beta" => "assistants=v2",
+    )
+    #parameter_list = makemetadata(Dict(kwargs...), ["tools"])
+    request_base = HTTP.request("GET", queryurl, headers = headers)
+    # request_base.status
+    if request_base.status == 200
+        request_content = JSON.parse(String(request_base.body))
+    end
+
+    core_output =
+        DataFrame("id" => request_content["id"], "gpt" => request_content["object"])
+
+    meta_output = makemetadata(request_content, ["id", "object"])
+
+    if output_type == "complete"
+        output = (core_output, meta_output)
+    elseif output_type == "meta"
+        output = meta_output
+    elseif output_type == "text"
+        output = core_output
+    end
+    return (output)
+end
+
+retrieve_gpt_vectorstorefiles(vid, fid; kwargs...) =
+    retrieve_gpt_vectorstorefiles(; vector_store_id = vid, file_id = fid, kwargs...)
+
+
+
+function add_gpt_vectorstorefile(;
+    vector_store_id = "",
+    file_id = "complete",
+    verbose = true,
+)
+    # not yet finished: need to figure out how to modify tool_resources
+    check_api_exists()
+    verbose ? println("Retrieving thread:$thread_id") : true
+    thisurl = url.vector_stores
+    queryurl = joinpath(thisurl, vector_store_id, "files")
+    headers = Dict(
+        "Authorization" => "Bearer $api_key",
+        "Content-Type" => "application/json",
+        "OpenAI-Beta" => "assistants=v2",
+    )
+    #parameter_list = makemetadata(Dict(kwargs...), ["tools"])
+    request_base =
+        HTTP.request("POST", queryurl, body = Dict("file_id" => file_id), headers = headers)
+    # request_base.status
+    if request_base.status == 200
+        request_content = JSON.parse(String(request_base.body))
+    end
+
+    core_output =
+        DataFrame("id" => request_content["id"], "gpt" => request_content["object"])
+
+    meta_output = makemetadata(request_content, ["id", "object"])
+
+    if output_type == "complete"
+        output = (core_output, meta_output)
+    elseif output_type == "meta"
+        output = meta_output
+    elseif output_type == "text"
+        output = core_output
+    end
+    return (output)
+end
+
+add_gpt_vectorstorefile(vid, fid; kwargs...) =
+    add_gpt_vectorstorefile(; vector_store_id = vid, file_id = fid, kwargs...)
+
+
+function add_gpt_vectorstorefiles(;
+    vector_store_id = "",
+    file_ids = "complete",
+    chunking_strategy = nothing,
+    verbose = true,
+)
+    # not yet finished: need to figure out how to modify tool_resources
+    check_api_exists()
+    verbose ? println("Retrieving thread:$thread_id") : true
+    thisurl = url.vector_stores
+    queryurl = joinpath(thisurl, vector_store_id, "file_batches")
+    headers = Dict(
+        "Authorization" => "Bearer $api_key",
+        "Content-Type" => "application/json",
+        "OpenAI-Beta" => "assistants=v2",
+    )
+    #parameter_list = makemetadata(Dict(kwargs...), ["tools"])
+    request_base =
+        HTTP.request("POST", queryurl, body = Dict("file_id" => file_id), headers = headers)
+    # request_base.status
+    if request_base.status == 200
+        request_content = JSON.parse(String(request_base.body))
+    end
+
+    core_output =
+        DataFrame("id" => request_content["id"], "gpt" => request_content["object"])
+
+    meta_output = makemetadata(request_content, ["id", "object"])
+
+    if output_type == "complete"
+        output = (core_output, meta_output)
+    elseif output_type == "meta"
+        output = meta_output
+    elseif output_type == "text"
+        output = core_output
+    end
+    return (output)
+end
+
+add_gpt_vectorstorefiles(vid, fids; kwargs...) =
+    add_gpt_vectorstorefiles(; vector_store_id = vid, file_ids = fids, kwargs...)

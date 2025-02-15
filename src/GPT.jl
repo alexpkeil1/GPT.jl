@@ -21,39 +21,43 @@ import DataFrames: DataFrame
 ##############################################################################
 
 export  # convenience calls ("API")
-        chatgpt,
-        dalle,
-        # underlying calls
-        gpt_single_completion,
-        gpt_single_image,
-        gpt_single_image_edit,
-        gpt_single_image_variations,        
-        # assistants
-        create_gpt_assistant,
-        create_gpt_thread,
-        add_gpt_message,
-        get_gpt_thread,
-        #list_gpt_threads,  # needs to be run in browser with persistent session      
-        list_gpt_assistants,
-        delete_gpt_assistant,
-        run_gpt_thread,
-        retrieve_gpt_run,
-        retrieve_gpt_thread,
-        retrieve_gpt_messages,
-        # info
-        listgptmodels,
-        gptmodelinfo,
-        # files
-        gptupload,
-        gptdownload,
-        #vector stores
-        add_gpt_vector_store,
-        # Utils
-        gpt_authenticate,
-        check_apikey_form,
-        deletenothingkeys!,
-        check_api_exists
-        
+    chatgpt,
+    dalle,
+    # underlying calls
+    gpt_single_completion,
+    gpt_single_image,
+    gpt_single_image_edit,
+    gpt_single_image_variations,
+    # assistants
+    create_gpt_assistant,
+    create_gpt_thread,
+    add_gpt_message,
+    get_gpt_thread,
+    #list_gpt_threads,  # needs to be run in browser with persistent session      
+    modify_gpt_assistant,
+    list_gpt_assistants,
+    delete_gpt_assistant,
+    run_gpt_thread,
+    retrieve_gpt_run,
+    retrieve_gpt_thread,
+    retrieve_gpt_messages,
+    # info
+    listgptmodels,
+    gptmodelinfo,
+    # files
+    gptupload,
+    gptdownload,
+    #vector stores
+    add_gpt_vector_store,
+    delete_gpt_vector_store,
+    modify_gpt_vector_store,
+    retrieve_gpt_vectorstorefiles,
+    # Utils
+    gpt_authenticate,
+    check_apikey_form,
+    deletenothingkeys!,
+    check_api_exists
+
 
 ##############################################################################
 ##
