@@ -558,9 +558,9 @@ function retrieve_gpt_messages(;
     end
 
     core_output =
-        DataFrame("id" => request_content["id"], "gpt" => request_content["object"])
+        DataFrame("gpt" => request_content["object"])
 
-    meta_output = makemetadata(request_content, ["id", "object"])
+    meta_output = makemetadata(request_content, ["object"])
 
     if output_type == "complete"
         output = (core_output, meta_output)
