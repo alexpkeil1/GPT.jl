@@ -40,6 +40,7 @@ export  # convenience calls ("API")
         run_gpt_thread,
         retrieve_gpt_run,
         retrieve_gpt_thread,
+        retrieve_gpt_messages,
         # info
         listgptmodels,
         gptmodelinfo,

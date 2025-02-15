@@ -531,3 +531,45 @@ function retrieve_gpt_thread(;
 end
 
 retrieve_gpt_thread(tid;kwargs...) = retrieve_gpt_thread(;thread_id=tid,kwargs...)
+
+
+
+function retrieve_gpt_messages(;
+    thread_id = "",
+    output_type = "complete",
+    verbose = true,
+)
+    # not yet finished: need to figure out how to modify tool_resources
+    check_api_exists()
+    verbose ? println("Retrieving thread:$thread_id") : true
+    thisurl = url.threads
+    queryurl = thisurl * "/$thread_id/messages"
+    headers = Dict(
+        "Authorization" => "Bearer $api_key",
+        "Content-Type" => "application/json",
+        "OpenAI-Beta" => "assistants=v2",
+    )
+    #parameter_list = makemetadata(Dict(kwargs...), ["tools"])
+    request_base =
+        HTTP.request("GET", queryurl, headers = headers)
+    # request_base.status
+    if request_base.status == 200
+        request_content = JSON.parse(String(request_base.body))
+    end
+
+    core_output =
+        DataFrame("id" => request_content["id"], "gpt" => request_content["object"])
+
+    meta_output = makemetadata(request_content, ["id", "object"])
+
+    if output_type == "complete"
+        output = (core_output, meta_output)
+    elseif output_type == "meta"
+        output = meta_output
+    elseif output_type == "text"
+        output = core_output
+    end
+    return (output)
+end
+
+retrieve_gpt_messages(tid;kwargs...) = retrieve_gpt_messages(;thread_id=tid,kwargs...)
