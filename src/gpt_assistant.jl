@@ -83,6 +83,7 @@ function create_gpt_assistant(;
 
     parameter_list = Dict(
         "name" => name,
+        "model" => model,
         "instructions" => instructions,
         "tools" => maketools(tools),
         "reasoning_effort" => reasoning_effort,
@@ -152,6 +153,7 @@ function modify_gpt_assistant(;
 
     parameter_list = Dict(
         "name" => name,
+        "model" => model,
         "instructions" => instructions,
         "tools" => maketools(tools),
         "reasoning_effort" => reasoning_effort,
