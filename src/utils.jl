@@ -57,12 +57,8 @@ end
 
 """
 # 
-using GPT
-gpt_authenticate("src/_secret_key")
 
-imgFile = expanduser("~/temp/testimg_gen1.png")
-filesize(imgFile)
-gptupload(imgFile, "assistants")
+
 # purpose: Use "assistants" for Assistants and Message files, "vision" for Assistants image file inputs, "batch" for Batch API, and "fine-tune" for Fine-tuning.
 file = expanduser("~/temp/testcsv.csv")
 gptupload(file, "assistants")
