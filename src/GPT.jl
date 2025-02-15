@@ -34,7 +34,6 @@ export  # convenience calls ("API")
         add_gpt_message,
         get_gpt_thread,
         #list_gpt_threads,  # needs to be run in browser with persistent session      
-        gptupload,
         list_gpt_assistants,
         delete_gpt_assistant,
         run_gpt_thread,
@@ -44,6 +43,11 @@ export  # convenience calls ("API")
         # info
         listgptmodels,
         gptmodelinfo,
+        # files
+        gptupload,
+        gptdownload,
+        #vector stores
+        add_gpt_vector_store,
         # Utils
         gpt_authenticate,
         check_apikey_form,

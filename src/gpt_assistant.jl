@@ -573,3 +573,56 @@ function retrieve_gpt_messages(;
 end
 
 retrieve_gpt_messages(tid;kwargs...) = retrieve_gpt_messages(;thread_id=tid,kwargs...)
+
+
+
+
+function add_gpt_vector_store(;
+    file_ids = nothing,
+    name = nothing,
+    expires_after = nothing,
+    chunking_strategy = nothing,
+    metadata = nothing,
+    output_type = "complete",
+    verbose = true,
+)
+    # not yet finished: need to figure out how to modify tool_resources
+    check_api_exists()
+    verbose ? println("Creating vector store") : true
+    thisurl = url.vector_stores
+    headers = Dict(
+        "Authorization" => "Bearer $api_key",
+        "Content-Type" => "application/json",
+        "OpenAI-Beta" => "assistants=v2",
+    )
+
+    parameter_list = Dict(
+        "file_ids" => file_ids,
+        "name" => name,
+        "expires_after" => expires_after,
+        "chunking_strategy" => chunking_strategy,
+        "metadata" => metadata
+        )
+
+    deletenothingkeys!(parameter_list)
+    request_base =
+        HTTP.request("POST", thisurl, body = JSON.json(parameter_list), headers = headers)
+    # request_base.status
+    if request_base.status == 200
+        request_content = JSON.parse(String(request_base.body))
+    end
+
+    core_output =
+        DataFrame("id" => request_content["id"], "gpt" => request_content["object"])
+
+    meta_output = makemetadata(request_content, ["id", "object"])
+
+    if output_type == "complete"
+        output = (core_output, meta_output)
+    elseif output_type == "meta"
+        output = meta_output
+    elseif output_type == "text"
+        output = core_output
+    end
+    return (output)
+end

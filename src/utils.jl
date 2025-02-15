@@ -87,6 +87,23 @@ end
 gptupload(f,p; kwargs...) = gptupload(file=f, purpose=p; kwargs...)
 
 
+
+function gptdownload(;file_id="", file_path="", verbose = true)
+  headers =
+  ["Authorization" => "Bearer $api_key"]
+  verbose ? println("Dowloading file $file_id") : true
+  thisurl = url.files
+  queryurl = joinpath(thisurl, file_id, "content")
+  request_base = HTTP.download(
+      queryurl,
+      file_path,
+      headers,
+  )
+  return(request_base)
+end
+gptdownload(f,p; kwargs...) = gptdownload(file_id=f, file_path=p; kwargs...)
+
+
 """
 request_content = Dict("run" => 1)
 exemptkeys = ["run"]
