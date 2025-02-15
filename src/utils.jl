@@ -65,7 +65,7 @@ gptupload(file, "assistants")
 gptupload(file=file, purpose="assistants")
 
 """
-function gptupload(;file="", purpose=""; verbose = true)
+function gptupload(;file="", purpose="", verbose = true)
     headers =
     #["Authorization" => "Bearer $api_key", "Content-Type" => "multipart/form-data"]
     ["Authorization" => "Bearer $api_key"]
