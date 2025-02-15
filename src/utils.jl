@@ -70,7 +70,7 @@ function gptupload(;file="", purpose="", verbose = true)
     #["Authorization" => "Bearer $api_key", "Content-Type" => "multipart/form-data"]
     ["Authorization" => "Bearer $api_key"]
     verbose ? println("Uploading file $file") : true
-    thisurl = url.files_upload
+    thisurl = url.files
     parameter_list = Dict("purpose" => purpose, "file" => open(file, "r"))
     request_base = HTTP.request(
         "POST",
