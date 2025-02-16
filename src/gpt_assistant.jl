@@ -71,10 +71,10 @@ function create_gpt_assistant(;
     description = nothing,
     tools = ["code_interpreter"],
     tool_resources = nothing,
-    metadata=nothing,
-    temperature=nothing,
-    top_p=nothing,
-    response_format="auto",
+    metadata = nothing,
+    temperature = nothing,
+    top_p = nothing,
+    response_format = "auto",
     output_type = "complete",
     verbose = true,
 )
@@ -133,7 +133,7 @@ create_gpt_assistant(n, i; kwargs...) =
     create_gpt_assistant(; name = n, instructions = i, kwargs...);
 
 function modify_gpt_assistant(;
-    assistant_id=nothing,
+    assistant_id = nothing,
     name = nothing,
     instructions = nothing,
     model = nothing,
@@ -141,10 +141,10 @@ function modify_gpt_assistant(;
     description = nothing,
     tools = nothing,
     tool_resources = nothing,
-    metadata=nothing,
-    temperature=nothing,
-    top_p=nothing,
-    response_format="auto",
+    metadata = nothing,
+    temperature = nothing,
+    top_p = nothing,
+    response_format = "auto",
     output_type = "complete",
     verbose = true,
 )
@@ -200,8 +200,7 @@ function modify_gpt_assistant(;
 end
 
 
-modify_gpt_assistant(aid; kwargs...) =
-    modify_gpt_assistant(; assitant_id=aid, kwargs...);
+modify_gpt_assistant(aid; kwargs...) = modify_gpt_assistant(; assitant_id = aid, kwargs...);
 
 
 function list_gpt_assistants(;
@@ -280,7 +279,13 @@ function delete_gpt_assistant(p; output_type = "complete", verbose = true)
 end
 
 
-function create_gpt_thread(; output_type = "complete", verbose = true)
+function create_gpt_thread(;
+    messages = nothing,
+    tool_resources = nothing,
+    metadata = nothing,
+    output_type = "complete",
+    verbose = true,
+)
     check_api_exists()
     verbose ? println("Creating thread") : true
     thisurl = url.threads
@@ -289,8 +294,15 @@ function create_gpt_thread(; output_type = "complete", verbose = true)
         "Content-Type" => "application/json",
         "OpenAI-Beta" => "assistants=v2",
     )
+    parameter_list = Dict(
+        #"thread_id" => thread_id,
+        "messages" => messages,
+        "tool_resources" => tool_resources,
+        "metadata" => metadata,
+    )
+    deletenothingkeys!(parameter_list)
 
-    request_base = HTTP.request("POST", thisurl, body = JSON.json(""), headers = headers)
+    request_base = HTTP.request("POST", thisurl, body = JSON.json(parameter_list), headers = headers)
     # request_base.status
     if request_base.status == 200
         request_content = JSON.parse(String(request_base.body))
