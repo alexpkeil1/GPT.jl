@@ -66,8 +66,7 @@ gpt_single_completion(prompt_input = "Write a research idea about using text dat
 
 """
 function gpt_single_completion(
-    p;
-    prompt_input = p,
+    prompt_input = "Hello world",
     model = "gpt-4o-mini",
     output_type = "complete",
     devmessage = raw"You use the ChatGPT defaults",
@@ -203,7 +202,7 @@ gpt_single_completion(;
 );
 =#
 
-gpt_single_completion(p;kwargs...
+gpt_single_completion(p; kwargs...
 ) = gpt_single_completion(;
     prompt_input=p, kwargs...
 );
