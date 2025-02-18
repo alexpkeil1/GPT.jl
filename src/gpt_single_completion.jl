@@ -65,7 +65,7 @@ gpt_single_completion(prompt_input = "Write a research idea about using text dat
      , max_tokens = 50)
 
 """
-function gpt_single_completion(
+function gpt_single_completion(;
     prompt_input = "Hello world",
     model = "gpt-4o-mini",
     output_type = "complete",
@@ -202,10 +202,7 @@ gpt_single_completion(;
 );
 =#
 
-gpt_single_completion(p; kwargs...
-) = gpt_single_completion(;
-    prompt_input=p, kwargs...
-);
+gpt_single_completion(p; kwargs...) = gpt_single_completion(;prompt_input=p, kwargs...);
 
 chatgpt(;kwargs...) = gpt_single_completion(;kwargs...)
 chatgpt(p;kwargs...) = gpt_single_completion(p;kwargs...)
