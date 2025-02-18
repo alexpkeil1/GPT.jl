@@ -204,8 +204,8 @@ gpt_single_completion(;
 =#
 
 gpt_single_completion(p;kwargs...
-) = gpt_single_completion(
-    prompt_input=p; kwargs...
+) = gpt_single_completion(;
+    prompt_input=p, kwargs...
 );
 
 chatgpt(;kwargs...) = gpt_single_completion(;kwargs...)
