@@ -854,7 +854,7 @@ function retrieve_gpt_vectorstorefiles(;
 )
     # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
-    verbose ? println("Retrieving thread:$thread_id") : true
+    verbose ? println("Retrieving thread:$vector_store_id") : true
     thisurl = url.vector_stores
     queryurl = joinpath(thisurl, vector_store_id, "files", file_id)
     headers = Dict(
