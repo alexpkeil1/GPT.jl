@@ -1,17 +1,14 @@
 """
  Makes working with an Assistant from the OpenAI API
 
-
  - Assistants can call OpenAI's models with specific instructions to tune their personality and capabilities.
  - Assistants can access multiple tools in parallel. These can be both OpenAI-hosted tools — like code_interpreter and file_search — or tools you build / host (via function calling).
  - Assistants can access persistent Threads. Threads simplify AI application development by storing message history and truncating it when the conversation gets too long for the model’s context length. You create a Thread once, and simply append Messages to it as your users reply.
  - Assistants can access files in several formats — either as part of their creation or as part of Threads between Assistants and users. When using tools, Assistants can also create files (e.g., images, spreadsheets, etc) and cite files they reference in the Messages they create.
 
-
  @description
  `gpt_assistant()` sends a single [completion request](https://beta.openai.com/docs/api-reference/completions) to the Open AI GPT-3 API.
  @details For a general guide on the completion requests, see [https://beta.openai.com/docs/guides/completion](https://beta.openai.com/docs/guides/completion). This function provides you with an R wrapper to send requests with the full range of request parameters as detailed on [https://beta.openai.com/docs/api-reference/completions](https://beta.openai.com/docs/api-reference/completions) and reproduced below.
-
 
 *Parameters*
 
@@ -35,7 +32,6 @@
    - `echo`: [https://beta.openai.com/docs/api-reference/completions/create#completions/create-echo](https://beta.openai.com/docs/api-reference/completions/create#completions/create-echo)
    - `stream`: [https://beta.openai.com/docs/api-reference/completions/create#completions/create-stream](https://beta.openai.com/docs/api-reference/completions/create#completions/create-stream)
 
-
  A tuple with two DataFrames (if `output_type` is the default "complete"): 
  
    - [1] contains the data table with the columns `n` (= the mo. of `n` responses requested), `prompt` (= the prompt that was sent), and `gpt` (= the completion as returned from the GPT-3 model). 
@@ -44,7 +40,6 @@
  If `output_type` is "text", only the DataFrames in slot [1] is returned.
 
  If `output_type` is "meta", only the DataFrames in slot [2] is returned.
-
 
  _Examples_
  # First authenticate with your API key via `gpt_authenticate("pathtokey")`
@@ -63,6 +58,8 @@
 create_gpt_thread()
 
 """
+
+
 function create_gpt_assistant(;
     name = "Default",
     instructions = "You do some admin tasks, such as scheduling",
@@ -128,9 +125,10 @@ function create_gpt_assistant(;
     return (output)
 end
 
-
 create_gpt_assistant(n, i; kwargs...) =
     create_gpt_assistant(; name = n, instructions = i, kwargs...);
+
+
 
 function modify_gpt_assistant(;
     assistant_id = nothing,
@@ -199,8 +197,8 @@ function modify_gpt_assistant(;
     return (output)
 end
 
-
 modify_gpt_assistant(aid; kwargs...) = modify_gpt_assistant(; assitant_id = aid, kwargs...);
+
 
 
 function list_gpt_assistants(;
@@ -247,6 +245,8 @@ function list_gpt_assistants(;
     return (output)
 end
 
+
+
 function delete_gpt_assistant(p; output_type = "complete", verbose = true)
     check_api_exists()
     verbose ? println("Deleting GPT assistant $p") : true
@@ -277,6 +277,7 @@ function delete_gpt_assistant(p; output_type = "complete", verbose = true)
     end
     return (output)
 end
+
 
 
 function create_gpt_thread(;
@@ -323,6 +324,8 @@ function create_gpt_thread(;
     return (output)
 end
 
+
+
 function list_gpt_threads(; output_type = "complete", verbose = true)
     check_api_exists()
     verbose ? println("Creating thread") : true
@@ -352,6 +355,8 @@ function list_gpt_threads(; output_type = "complete", verbose = true)
     end
     return (output)
 end
+
+
 
 function get_gpt_thread(t; output_type = "complete", verbose = true)
     check_api_exists()
@@ -383,6 +388,8 @@ function get_gpt_thread(t; output_type = "complete", verbose = true)
     end
     return (output)
 end
+
+
 
 function modify_gpt_thread(
     t;
@@ -424,6 +431,7 @@ function modify_gpt_thread(
 end
 
 
+
 function add_gpt_message(;
     thread_id = "",
     role = "user",
@@ -448,7 +456,6 @@ function add_gpt_message(;
 
     deletenothingkeys!(parameter_list)
 
-
     request_base =
         HTTP.request("POST", queryurl, body = JSON.json(parameter_list), headers = headers)
     # request_base.status
@@ -470,6 +477,8 @@ function add_gpt_message(;
     end
     return (output)
 end
+
+
 
 function run_gpt_thread(;
     thread_id = "",
@@ -551,6 +560,7 @@ run_gpt_thread(tid, aid; kwargs...) =
     run_gpt_thread(; thread_id = tid, assistant_id = aid, kwargs...)
 
 
+
 function retrieve_gpt_run(;
     thread_id = "",
     run_id = "",
@@ -588,6 +598,7 @@ function retrieve_gpt_run(;
     end
     return (output)
 end
+
 
 
 function retrieve_gpt_thread(; thread_id = "", output_type = "complete", verbose = true)
@@ -663,7 +674,6 @@ retrieve_gpt_messages(tid; kwargs...) = retrieve_gpt_messages(; thread_id = tid,
 
 
 
-
 function add_gpt_vector_store(;
     file_ids = nothing,
     name = nothing,
@@ -673,7 +683,6 @@ function add_gpt_vector_store(;
     output_type = "complete",
     verbose = true,
 )
-    # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
     verbose ? println("Creating vector store") : true
     thisurl = url.vector_stores
@@ -694,7 +703,6 @@ function add_gpt_vector_store(;
     deletenothingkeys!(parameter_list)
     request_base =
         HTTP.request("POST", thisurl, body = JSON.json(parameter_list), headers = headers)
-    # request_base.status
     if request_base.status == 200
         request_content = JSON.parse(String(request_base.body))
     end
@@ -713,6 +721,8 @@ function add_gpt_vector_store(;
     end
     return (output)
 end
+
+
 
 function modify_gpt_vector_store(;
     vector_store_id = nothing,
@@ -722,7 +732,6 @@ function modify_gpt_vector_store(;
     output_type = "complete",
     verbose = true,
 )
-    # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
     verbose ? println("Modifying vector store") : true
     thisurl = joinpath(url.vector_stores, vector_store_id)
@@ -732,17 +741,12 @@ function modify_gpt_vector_store(;
         "OpenAI-Beta" => "assistants=v2",
     )
 
-    parameter_list = Dict(
-        #"vector_store_id" => vector_store_id,
-        "name" => name,
-        "expires_after" => expires_after,
-        "metadata" => metadata,
-    )
+    parameter_list =
+        Dict("name" => name, "expires_after" => expires_after, "metadata" => metadata)
 
     deletenothingkeys!(parameter_list)
     request_base =
         HTTP.request("POST", thisurl, body = JSON.json(parameter_list), headers = headers)
-    # request_base.status
     if request_base.status == 200
         request_content = JSON.parse(String(request_base.body))
     end
@@ -761,6 +765,8 @@ function modify_gpt_vector_store(;
     end
     return (output)
 end
+
+
 
 function delete_gpt_vector_store(;
     vector_store_id = nothing,
@@ -770,7 +776,6 @@ function delete_gpt_vector_store(;
     output_type = "complete",
     verbose = true,
 )
-    # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
     verbose ? println("Deleting vector store") : true
     thisurl = joinpath(url.vector_stores, vector_store_id)
@@ -780,17 +785,12 @@ function delete_gpt_vector_store(;
         "OpenAI-Beta" => "assistants=v2",
     )
 
-    parameter_list = Dict(
-        #"vector_store_id" => vector_store_id,
-        "name" => name,
-        "expires_after" => expires_after,
-        "metadata" => metadata,
-    )
+    parameter_list =
+        Dict("name" => name, "expires_after" => expires_after, "metadata" => metadata)
 
     deletenothingkeys!(parameter_list)
     request_base =
         HTTP.request("DELETE", thisurl, body = JSON.json(parameter_list), headers = headers)
-    # request_base.status
     if request_base.status == 200
         request_content = JSON.parse(String(request_base.body))
     end
@@ -810,12 +810,13 @@ function delete_gpt_vector_store(;
     return (output)
 end
 
+
+
 function retrieve_gpt_vectorstore(;
     vector_store_id = "",
     output_type = "complete",
     verbose = true,
 )
-    # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
     verbose ? println("Retrieving vector store: $vector_store_id") : true
     thisurl = url.vector_stores
@@ -825,9 +826,7 @@ function retrieve_gpt_vectorstore(;
         "Content-Type" => "application/json",
         "OpenAI-Beta" => "assistants=v2",
     )
-    #parameter_list = makemetadata(Dict(kwargs...), ["tools"])
     request_base = HTTP.request("GET", queryurl, headers = headers)
-    # request_base.status
     if request_base.status == 200
         request_content = JSON.parse(String(request_base.body))
     end
@@ -851,13 +850,13 @@ retrieve_gpt_vectorstore(vid; kwargs...) =
     retrieve_gpt_vectorstore(; vector_store_id = vid, kwargs...)
 
 
+
 function retrieve_gpt_vectorstorefiles(;
     vector_store_id = "",
     file_id = "complete",
     output_type = "complete",
     verbose = true,
 )
-    # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
     verbose ? println("Retrieving vector store files:$vector_store_id") : true
     thisurl = url.vector_stores
@@ -867,9 +866,7 @@ function retrieve_gpt_vectorstorefiles(;
         "Content-Type" => "application/json",
         "OpenAI-Beta" => "assistants=v2",
     )
-    #parameter_list = makemetadata(Dict(kwargs...), ["tools"])
     request_base = HTTP.request("GET", queryurl, headers = headers)
-    # request_base.status
     if request_base.status == 200
         request_content = JSON.parse(String(request_base.body))
     end
@@ -910,10 +907,8 @@ function add_gpt_vectorstorefile(;
         "Content-Type" => "application/json",
         "OpenAI-Beta" => "assistants=v2",
     )
-    #parameter_list = makemetadata(Dict(kwargs...), ["tools"])
     request_base =
         HTTP.request("POST", queryurl, body = Dict("file_id" => file_id), headers = headers)
-    # request_base.status
     if request_base.status == 200
         request_content = JSON.parse(String(request_base.body))
     end
@@ -937,14 +932,14 @@ add_gpt_vectorstorefile(vid, fid; kwargs...) =
     add_gpt_vectorstorefile(; vector_store_id = vid, file_id = fid, kwargs...)
 
 
+
 function add_gpt_vectorstorefiles(;
     vector_store_id = "",
-    file_ids = "complete",
+    file_ids = [""],
     chunking_strategy = nothing,
     output_type = "complete",
     verbose = true,
 )
-    # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
     verbose ? println("Retrieving thread:$thread_id") : true
     thisurl = url.vector_stores
@@ -954,9 +949,10 @@ function add_gpt_vectorstorefiles(;
         "Content-Type" => "application/json",
         "OpenAI-Beta" => "assistants=v2",
     )
-    #parameter_list = makemetadata(Dict(kwargs...), ["tools"])
+    parameter_list = Dict("file_ids" => file_ids, "chunking_strategy" => chunking_strategy)
+    deletenothingkeys!(parameter_list)
     request_base =
-        HTTP.request("POST", queryurl, body = Dict("file_id" => file_id), headers = headers)
+        HTTP.request("POST", queryurl, body = JSON.json(parameter_list), headers = headers)
     # request_base.status
     if request_base.status == 200
         request_content = JSON.parse(String(request_base.body))
