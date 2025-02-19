@@ -724,7 +724,7 @@ function modify_gpt_vector_store(;
 )
     # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
-    verbose ? println("Creating vector store") : true
+    verbose ? println("Modifying vector store") : true
     thisurl = joinpath(url.vector_stores, vector_store_id)
     headers = Dict(
         "Authorization" => "Bearer $api_key",
@@ -772,7 +772,7 @@ function delete_gpt_vector_store(;
 )
     # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
-    verbose ? println("Creating vector store") : true
+    verbose ? println("Deleting vector store") : true
     thisurl = joinpath(url.vector_stores, vector_store_id)
     headers = Dict(
         "Authorization" => "Bearer $api_key",
