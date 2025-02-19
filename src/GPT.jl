@@ -49,6 +49,7 @@ export  # convenience calls ("API")
     gptdownload,
     #vector stores
     add_gpt_vector_store,
+    retrieve_gpt_vectorstore,
     delete_gpt_vector_store,
     modify_gpt_vector_store,
     retrieve_gpt_vectorstorefiles,
