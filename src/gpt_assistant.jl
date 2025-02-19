@@ -810,10 +810,14 @@ function delete_gpt_vector_store(;
     return (output)
 end
 
-function retrieve_gpt_vectorstore(; vector_store_id = "", verbose = true)
+function retrieve_gpt_vectorstore(;
+    vector_store_id = "",
+    output_type = "complete",
+    verbose = true,
+)
     # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
-    verbose ? println("Retrieving thread:$thread_id") : true
+    verbose ? println("Retrieving vector store: $vector_store_id") : true
     thisurl = url.vector_stores
     queryurl = joinpath(thisurl, vector_store_id)
     headers = Dict(
@@ -850,11 +854,12 @@ retrieve_gpt_vectorstore(vid; kwargs...) =
 function retrieve_gpt_vectorstorefiles(;
     vector_store_id = "",
     file_id = "complete",
+    output_type = "complete",
     verbose = true,
 )
     # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
-    verbose ? println("Retrieving thread:$vector_store_id") : true
+    verbose ? println("Retrieving vector store files:$vector_store_id") : true
     thisurl = url.vector_stores
     queryurl = joinpath(thisurl, vector_store_id, "files", file_id)
     headers = Dict(
@@ -891,7 +896,8 @@ retrieve_gpt_vectorstorefiles(vid, fid; kwargs...) =
 
 function add_gpt_vectorstorefile(;
     vector_store_id = "",
-    file_id = "complete",
+    file_id = "",
+    output_type = "complete",
     verbose = true,
 )
     # not yet finished: need to figure out how to modify tool_resources
@@ -935,6 +941,7 @@ function add_gpt_vectorstorefiles(;
     vector_store_id = "",
     file_ids = "complete",
     chunking_strategy = nothing,
+    output_type = "complete",
     verbose = true,
 )
     # not yet finished: need to figure out how to modify tool_resources
