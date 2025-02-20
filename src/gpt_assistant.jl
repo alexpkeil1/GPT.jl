@@ -394,6 +394,7 @@ end
 function modify_gpt_thread(
     t;
     tool_resources = nothing,
+    metadata = nothing,
     output_type = "complete",
     verbose = true,
 )
@@ -407,9 +408,11 @@ function modify_gpt_thread(
         "Content-Type" => "application/json",
         "OpenAI-Beta" => "assistants=v2",
     )
-    tooldict = maketools(tool_resources)
-
-    request_base = HTTP.request("POST", queryurl, body = JSON.json(""), headers = headers)
+    parameters = Dict(
+        "tool_resources" => tool_resources
+    )
+    parameters = deletenothingkeys!(parameters)
+    request_base = HTTP.request("POST", queryurl, body = JSON.json(parameters), headers = headers)
     # request_base.status
     if request_base.status == 200
         request_content = JSON.parse(String(request_base.body))
