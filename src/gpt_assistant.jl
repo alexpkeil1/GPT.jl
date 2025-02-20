@@ -400,7 +400,7 @@ function modify_gpt_thread(
 )
     # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
-    verbose ? println("Creating thread") : true
+    verbose ? println("Modifying thread $t") : true
     thisurl = url.threads
     queryurl = joinpath(thisurl, t)
     headers = Dict(
@@ -408,11 +408,12 @@ function modify_gpt_thread(
         "Content-Type" => "application/json",
         "OpenAI-Beta" => "assistants=v2",
     )
-    parameters = Dict(
-        "tool_resources" => tool_resources
+    parameter_list = Dict(
+        "tool_resources" => tool_resources,
+        "metadata" => metadata
     )
-    parameters = deletenothingkeys!(parameters)
-    request_base = HTTP.request("POST", queryurl, body = JSON.json(parameters), headers = headers)
+    deletenothingkeys!(parameter_list)
+    request_base = HTTP.request("POST", queryurl, body = JSON.json(parameter_list), headers = headers)
     # request_base.status
     if request_base.status == 200
         request_content = JSON.parse(String(request_base.body))
