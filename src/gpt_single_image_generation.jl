@@ -34,9 +34,9 @@
 
  
 """
-function gpt_single_image(
-    model = "dall-e-3",
+function gpt_single_image(;
     prompt_input = "",
+    model = "dall-e-3",
     n = 1,
     size = "1024x1024", #  "256x256", "512x512", "1024x1024", "1024x1792", "1792x1024",
     quality = "standard",
@@ -110,7 +110,7 @@ function gpt_single_image(
     return (output)
 end
 
-gpt_single_image(p; kwargs...) = gpt_single_image(;prompt_input = p, kwargs...);
+gpt_single_image(p; kwargs...) = gpt_single_image(; prompt_input = p, kwargs...);
 
 dalle(; kwargs...) = gpt_single_image(; kwargs...)
 dalle(p; kwargs...) = gpt_single_image(p; kwargs...)
