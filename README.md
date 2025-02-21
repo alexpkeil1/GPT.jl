@@ -18,7 +18,11 @@
 [![Documentation](https://img.shields.io/badge/docs-master-blue.svg)](https://alexpkeil1.github.io/gpt.jl/dev)
 -->
 
-Access the [GPT-3 API](https://beta.openai.com/docs/introduction/overview) from Julia. This started out as a line-for-line port from the R package [rgpt](https://github.com/ben-aaron188/rgpt) from [ben-aaron188](https://github.com/ben-aaron188)[^1]. I have added new functionality to allow for creation/editing of images using GPT-3 API.
+Access the [OpenAI API](https://platform.openai.com/docs/overview) from Julia. This started out as a line-for-line port from the R package [rgpt](https://github.com/ben-aaron188/rgpt) from [ben-aaron188](https://github.com/ben-aaron188)[^1]. I have added new functionality to allow for additional connections to the API which have been tested for basic functionality as of Feb-2025. Work on this module is ongoing, but development only occurs when I personally need to use something from this API, which is rare. Pull requests are welcome to address bugs. Also consider:
+
+  - [OpenAI.jl](https://github.com/JuliaML/OpenAI.jl)
+
+  - [GenGPT3.jl](https://github.com/probcomp/GenGPT3.jl)
 
 
 [^1]: Kleinberg, B. (2022). rgpt: Making requests from R to the GPT-3 API (Version 0.3) [Computer software]. https://doi.org/10.5281/zenodo.7327667

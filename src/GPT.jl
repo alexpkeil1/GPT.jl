@@ -1,5 +1,13 @@
 """
-Placeholder for a short summary about gpt.
+This module provides a julian interface to the openai API (https://platform.openai.com/docs/overview)
+
+The main functions of interest to general users are the convenience functions
+
+`chatgpt` (language processing)
+
+and 
+
+`dalle` (image processing)
 """
 module GPT
 

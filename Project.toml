@@ -1,7 +1,7 @@
 name = "GPT"
 uuid = "d65eb933-142e-424c-b873-46cc474275a4"
 authors = ["Alex Keil <alex.keil@gmail.com>"]
-version = "0.5.1"
+version = "0.6.0"
 
 [deps]
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
