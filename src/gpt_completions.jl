@@ -80,8 +80,8 @@ gpt_completions(prompt_var = dt_prompts["prompts"]
 
 """
 function gpt_completions(;
-    prompt_var,
-    id_var,
+    prompt_var="",
+    id_var="",
     param_output_type = "complete",
     param_devmessage = raw"You use the ChatGPT defaults",
     param_model = "gpt-4o-mini",
