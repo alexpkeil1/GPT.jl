@@ -80,7 +80,7 @@ function gpt_reasoning(
     stop = nothing,
     presence_penalty = 0,
     frequency_penalty = 0,
-    verbose = true,
+    verbose = verbose,
 )
     check_api_exists()
     verbose ? println("Reasoning using $model") : true
@@ -189,7 +189,7 @@ gpt_reasoning(;
     stop = nothing,
     presence_penalty = 0,
     frequency_penalty = 0,
-    verbose = true,
+    verbose = verbose,
 ) = gpt_reasoning(
     prompt_input;
     prompt_input = prompt_input,

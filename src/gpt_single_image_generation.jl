@@ -35,103 +35,82 @@
  
 """
 function gpt_single_image(
-  p;
-  model = "dall-e-3",
-  prompt_input=p,
-  n = 1,
-  size = "1024x1024", #  "256x256", "512x512", "1024x1024", "1024x1792", "1792x1024",
-  quality = "standard",
-  response_format = "url", # "b64_json"
-  output_type = "complete",
-  verbose=true
+    model = "dall-e-3",
+    prompt_input = "",
+    n = 1,
+    size = "1024x1024", #  "256x256", "512x512", "1024x1024", "1024x1792", "1792x1024",
+    quality = "standard",
+    response_format = "url", # "b64_json"
+    output_type = "complete",
+    verbose = true,
 )
-  check_api_exists()
-  verbose ? println("Using $model") : true
-  parameter_list = Dict(
-    "prompt" => prompt_input,
-    "model" => model,
-    "n" => n,
-    "size" => size,
-    "quality" => quality,
-    "response_format" => response_format
-  )
-    
-  deletenothingkeys!(parameter_list)    
-    
-  headers = Dict(
-    "Authorization" => "Bearer $api_key",
-    "Content-Type" => "application/json"
+    check_api_exists()
+    verbose ? println("Using $model") : true
+    parameter_list = Dict(
+        "prompt" => prompt_input,
+        "model" => model,
+        "n" => n,
+        "size" => size,
+        "quality" => quality,
+        "response_format" => response_format,
     )
 
-  request_base = HTTP.request(
-    "POST",
-    url.generations,
-    body=JSON.json(parameter_list),
-    headers=headers
-  );
-  # request_base.status
-  if request_base.status == 200
-    request_content = JSON.parse(String(request_base.body))
-  end
-  #
-  if n == 1
-    core_output = DataFrame(
-                   "n" => 1,
-                   "prompt" => prompt_input,
-                   "gpt" => request_content["data"][1]["url"]
-                   )
-  elseif n > 1
-    core_output = DataFrame(
-                   "n" => 1:n,
-                   "prompt" => fill(prompt_input, n),
-                   "gpt" => fill("", n)
-                   )
-    for i in 1:n
-      core_output.gpt[i] = request_content["data"][i]["url"]
+    deletenothingkeys!(parameter_list)
+
+    headers =
+        Dict("Authorization" => "Bearer $api_key", "Content-Type" => "application/json")
+
+    request_base = HTTP.request(
+        "POST",
+        url.generations,
+        body = JSON.json(parameter_list),
+        headers = headers,
+    )
+    # request_base.status
+    if request_base.status == 200
+        request_content = JSON.parse(String(request_base.body))
     end
-  end
+    #
+    if n == 1
+        core_output = DataFrame(
+            "n" => 1,
+            "prompt" => prompt_input,
+            "gpt" => request_content["data"][1]["url"],
+        )
+    elseif n > 1
+        core_output =
+            DataFrame("n" => 1:n, "prompt" => fill(prompt_input, n), "gpt" => fill("", n))
+        for i = 1:n
+            core_output.gpt[i] = request_content["data"][i]["url"]
+        end
+    end
 
-  meta_output = Dict(
-    "request_created" => request_content["created"],
-    "param_prompt" => prompt_input,
-    "param_size" => size,
-    "param_quality" => quality,
-    "param_response_format" => response_format
-  )
+    meta_output = Dict(
+        "request_created" => request_content["created"],
+        "param_prompt" => prompt_input,
+        "param_size" => size,
+        "param_quality" => quality,
+        "param_response_format" => response_format,
+    )
 
-  if output_type == "complete"
-    fl= download(core_output.gpt[1])
-    #run(`open -a Preview.app $fl`)
-    println("Image (png format) available at $fl")
-    output = (core_output, meta_output)
-  elseif output_type == "meta"
-    output = meta_output
-  elseif output_type == "image"
-    fl= download(core_output.gpt[1])
-    #run(`open -a Preview.app $fl`)
-    println("Image (png format) available at $fl")
-    output = core_output
-  end
+    if output_type == "complete"
+        fl = download(core_output.gpt[1])
+        #run(`open -a Preview.app $fl`)
+        println("Image (png format) available at $fl")
+        output = (core_output, meta_output)
+    elseif output_type == "meta"
+        output = meta_output
+    elseif output_type == "image"
+        fl = download(core_output.gpt[1])
+        #run(`open -a Preview.app $fl`)
+        println("Image (png format) available at $fl")
+        output = core_output
+    end
 
-  return(output)
+    return (output)
 end
 
-gpt_single_image(;prompt_input="",
-n = 1,
-size = "1024x1024", # "1024x1792", "1792x1024"
-quality = "standard",
-response_format = "url", # "b64_json"
-output_type = "complete"
-) = gpt_single_image(
-        prompt_input;
-        prompt_input=prompt_input,
-        n = n,
-        size = size, 
-        quality=quality,
-        response_format = response_format,
-        output_type = output_type
-        )
-;
+gpt_single_image(p; kwargs...) = gpt_single_image(;prompt_input = p, kwargs...);
 
-dalle(p;kwargs...) = gpt_single_image(p;kwargs...)
-dalle(;kwargs...) = gpt_single_image(;kwargs...)
+dalle(; kwargs...) = gpt_single_image(; kwargs...)
+dalle(p; kwargs...) = gpt_single_image(p; kwargs...)

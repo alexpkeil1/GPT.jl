@@ -73,7 +73,7 @@ function create_gpt_assistant(;
     top_p = nothing,
     response_format = "auto",
     output_type = "complete",
-    verbose = true,
+    verbose = verbose,
 )
     check_api_exists()
     verbose ? println("Using $model") : true
@@ -144,7 +144,7 @@ function modify_gpt_assistant(;
     top_p = nothing,
     response_format = "auto",
     output_type = "complete",
-    verbose = true,
+    verbose = verbose,
 )
     check_api_exists()
     verbose ? println("Using $model") : true
@@ -207,7 +207,7 @@ function list_gpt_assistants(;
     after = nothing,
     before = nothing,
     output_type = "complete",
-    verbose = true,
+    verbose = verbose,
 )
     check_api_exists()
     verbose ? println("Checking for GPT assistants") : true
@@ -247,7 +247,7 @@ end
 
 
 
-function delete_gpt_assistant(p; output_type = "complete", verbose = true)
+function delete_gpt_assistant(p; output_type = "complete", verbose = verbose)
     check_api_exists()
     verbose ? println("Deleting GPT assistant $p") : true
     thisurl = url.assistants
@@ -285,7 +285,7 @@ function create_gpt_thread(;
     tool_resources = nothing,
     metadata = nothing,
     output_type = "complete",
-    verbose = true,
+    verbose = verbose,
 )
     check_api_exists()
     verbose ? println("Creating thread") : true
@@ -326,7 +326,7 @@ end
 
 
 
-function list_gpt_threads(; output_type = "complete", verbose = true)
+function list_gpt_threads(; output_type = "complete", verbose = verbose)
     check_api_exists()
     verbose ? println("Creating thread") : true
     thisurl = url.threads
@@ -358,7 +358,7 @@ end
 
 
 
-function get_gpt_thread(t; output_type = "complete", verbose = true)
+function get_gpt_thread(t; output_type = "complete", verbose = verbose)
     check_api_exists()
     verbose ? println("Creating thread") : true
     thisurl = url.threads
@@ -396,7 +396,7 @@ function modify_gpt_thread(
     tool_resources = nothing,
     metadata = nothing,
     output_type = "complete",
-    verbose = true,
+    verbose = verbose,
 )
     # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
@@ -442,7 +442,7 @@ function add_gpt_message(;
     content = "",
     attachments = nothing,
     output_type = "complete",
-    verbose = true,
+    verbose = verbose,
 )
     # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
@@ -501,7 +501,7 @@ function run_gpt_thread(;
     truncation_strategy = nothing,
     tool_choice = nothing,
     output_type = "complete",
-    verbose = true,
+    verbose = verbose,
 )
     # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
@@ -569,7 +569,7 @@ function retrieve_gpt_run(;
     thread_id = "",
     run_id = "",
     output_type = "complete",
-    verbose = true,
+    verbose = verbose,
 )
     # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
@@ -605,7 +605,7 @@ end
 
 
 
-function retrieve_gpt_thread(; thread_id = "", output_type = "complete", verbose = true)
+function retrieve_gpt_thread(; thread_id = "", output_type = "complete", verbose = verbose)
     # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
     verbose ? println("Retrieving thread:$thread_id") : true
@@ -642,7 +642,7 @@ retrieve_gpt_thread(tid; kwargs...) = retrieve_gpt_thread(; thread_id = tid, kwa
 
 
 
-function retrieve_gpt_messages(; thread_id = "", output_type = "complete", verbose = true)
+function retrieve_gpt_messages(; thread_id = "", output_type = "complete", verbose = verbose)
     # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
     verbose ? println("Retrieving thread:$thread_id") : true
@@ -685,7 +685,7 @@ function add_gpt_vector_store(;
     chunking_strategy = nothing,
     metadata = nothing,
     output_type = "complete",
-    verbose = true,
+    verbose = verbose,
 )
     check_api_exists()
     verbose ? println("Creating vector store") : true
@@ -734,7 +734,7 @@ function modify_gpt_vector_store(;
     expires_after = nothing,
     metadata = nothing,
     output_type = "complete",
-    verbose = true,
+    verbose = verbose,
 )
     check_api_exists()
     verbose ? println("Modifying vector store") : true
@@ -778,7 +778,7 @@ function delete_gpt_vector_store(;
     expires_after = nothing,
     metadata = nothing,
     output_type = "complete",
-    verbose = true,
+    verbose = verbose,
 )
     check_api_exists()
     verbose ? println("Deleting vector store") : true
@@ -819,7 +819,7 @@ end
 function retrieve_gpt_vectorstore(;
     vector_store_id = "",
     output_type = "complete",
-    verbose = true,
+    verbose = verbose,
 )
     check_api_exists()
     verbose ? println("Retrieving vector store: $vector_store_id") : true
@@ -859,7 +859,7 @@ function retrieve_gpt_vectorstorefiles(;
     vector_store_id = "",
     file_id = "complete",
     output_type = "complete",
-    verbose = true,
+    verbose = verbose,
 )
     check_api_exists()
     verbose ? println("Retrieving vector store files:$vector_store_id") : true
@@ -899,7 +899,7 @@ function add_gpt_vectorstorefile(;
     vector_store_id = "",
     file_id = "",
     output_type = "complete",
-    verbose = true,
+    verbose = verbose,
 )
     # not yet finished: need to figure out how to modify tool_resources
     check_api_exists()
@@ -942,7 +942,7 @@ function add_gpt_vectorstorefiles(;
     file_ids = [""],
     chunking_strategy = nothing,
     output_type = "complete",
-    verbose = true,
+    verbose = verbose,
 )
     check_api_exists()
     verbose ? println("Retrieving thread:$thread_id") : true

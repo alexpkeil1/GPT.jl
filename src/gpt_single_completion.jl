@@ -79,7 +79,7 @@ function gpt_single_completion(;
     stop = nothing,
     presence_penalty = 0,
     frequency_penalty = 0,
-    verbose = true,
+    verbose = verbose,
 )
     check_api_exists()
     verbose ? println("Using $model") : true
@@ -183,7 +183,7 @@ gpt_single_completion(;
     stop = nothing,
     presence_penalty = 0,
     frequency_penalty = 0,
-    verbose = true,
+    verbose = verbose,
 ) = gpt_single_completion(
     prompt_input;
     prompt_input = prompt_input,

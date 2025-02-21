@@ -30,7 +30,7 @@ These vectors can be used for downstream tasks such as (vector) similarity calcu
  gpt_single_embedding(input = sample_string
      , model = "text-embedding-ada-002")
 """
-function gpt_single_embedding(input, model = "text-embedding-ada-002")
+function gpt_single_embedding(input, model = "text-embedding-ada-002", verbose = verbose)
     check_api_exists()
     verbose ? println("Using $model") : true
     parameter_list = Dict("model" => model, "input" => input)

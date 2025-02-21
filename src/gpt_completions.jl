@@ -79,72 +79,75 @@ gpt_completions(prompt_var = dt_prompts["prompts"]
     , param_temperature = 0.4)
 
 """
-function gpt_completions(prompt_var
-                              , id_var
-                              , param_output_type = "complete"
-                              , param_devmessage = raw"You use the ChatGPT defaults"
-                              , param_model = "gpt-4o-mini"
-                              , param_suffix = NULL
-                              , param_max_tokens = 100
-                              , param_temperature = 0.9
-                              , param_top_p = 1
-                              , param_n = 1
-                              , param_logprobs = NULL
-                              , param_stop = NULL
-                              , param_presence_penalty = 0
-                              , param_frequency_penalty = 0)
+function gpt_completions(;
+    prompt_var,
+    id_var,
+    param_output_type = "complete",
+    param_devmessage = raw"You use the ChatGPT defaults",
+    param_model = "gpt-4o-mini",
+    param_suffix = NULL,
+    param_max_tokens = 100,
+    param_temperature = 0.9,
+    param_top_p = 1,
+    param_n = 1,
+    param_logprobs = NULL,
+    param_stop = NULL,
+    param_presence_penalty = 0,
+    param_frequency_penalty = 0,
+    verbose = verbose
+)
 
-  data_length = length(prompt_var)
-  if isnothing(id_var)
-    data_id = ["prompt_$i" for i in 1:data_length]
-  else
-    data_id = id_var
-  end
+    data_length = length(prompt_var)
+    if isnothing(id_var)
+        data_id = ["prompt_$i" for i = 1:data_length]
+    else
+        data_id = id_var
+    end
 
-  #empty_list = list()
-  #meta_list = list()
+    #empty_list = list()
+    #meta_list = list()
 
-  empty_list = [DataFrame() for i in 1:data_length]
-  meta_list = [Dict() for i in 1:data_length]
+    empty_list = [DataFrame() for i = 1:data_length]
+    meta_list = [Dict() for i = 1:data_length]
 
-  for i = 1:data_length
-    println("Request: $i / $data_length")
-    row_outcome = gpt_single_completion(prompt_input = prompt_var[i]
-                                      , model = param_model
-                                      , output_type = "complete"
-                                      , devmessage = param_devmessage
-                                      , suffix = param_suffix
-                                      , max_tokens = param_max_tokens
-                                      , temperature = param_temperature
-                                      , top_p = param_top_p
-                                      , n = param_n
-                                      , logprobs = param_logprobs
-                                      , stop = param_stop
-                                      , presence_penalty = param_presence_penalty
-                                      , frequency_penalty = param_frequency_penalty
-                                      )
+    for i = 1:data_length
+        println("Request: $i / $data_length")
+        row_outcome = gpt_single_completion(
+            prompt_input = prompt_var[i],
+            model = param_model,
+            output_type = "complete",
+            devmessage = param_devmessage,
+            suffix = param_suffix,
+            max_tokens = param_max_tokens,
+            temperature = param_temperature,
+            top_p = param_top_p,
+            n = param_n,
+            logprobs = param_logprobs,
+            stop = param_stop,
+            presence_penalty = param_presence_penalty,
+            frequency_penalty = param_frequency_penalty,
+        )
 
-    row_outcome[1].id .= data_id[i]
-    merge!(row_outcome[2],Dict("id" => data_id[i]))
+        row_outcome[1].id .= data_id[i]
+        merge!(row_outcome[2], Dict("id" => data_id[i]))
 
-    empty_list[i] = row_outcome[1]
-    meta_list[i] = row_outcome[2]
+        empty_list[i] = row_outcome[1]
+        meta_list[i] = row_outcome[2]
 
-  end
-  
-  bunch_core_output = reduce(vcat, empty_list)
-  bunch_meta_df = map(DataFrame, meta_list)
-  bunch_meta_output = reduce(vcat, bunch_meta_df)
+    end
+
+    bunch_core_output = reduce(vcat, empty_list)
+    bunch_meta_df = map(DataFrame, meta_list)
+    bunch_meta_output = reduce(vcat, bunch_meta_df)
 
 
-  if param_output_type == "complete"
-    output = (bunch_core_output
-                  , bunch_meta_output)
-  elseif param_output_type == "meta"
-    output = bunch_meta_output
-  elseif param_output_type == "text"
-    output = bunch_core_output
-  end
+    if param_output_type == "complete"
+        output = (bunch_core_output, bunch_meta_output)
+    elseif param_output_type == "meta"
+        output = bunch_meta_output
+    elseif param_output_type == "text"
+        output = bunch_core_output
+    end
 
-  return(output)
+    return (output)
 end

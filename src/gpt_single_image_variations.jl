@@ -50,7 +50,8 @@ function gpt_single_image_variations(
   size = "256x256", # "512x512", "1024x1024"
   response_format = "url", # "b64_json"
   image = img,
-  output_type = "complete"
+  output_type = "complete",
+  verbose = verbose
 )
   check_api_exists()
   if(model != "dall-e-2")

@@ -32,106 +32,98 @@
  
 """
 function gpt_single_image_edit(
-  p;
-  model = "dall-e-2",
-  prompt_input=p,
-  n = 1,
-  size = "256x256", # "512x512", "1024x1024"
-  response_format = "url", # "b64_json"
-  image = nothing,
-  mask = nothing,
-  output_type = "complete",
-  verbose = true
+    p;
+    model = "dall-e-2",
+    prompt_input = p,
+    n = 1,
+    size = "256x256", # "512x512", "1024x1024"
+    response_format = "url", # "b64_json"
+    image = nothing,
+    mask = nothing,
+    output_type = "complete",
+    verbose = verbose,
 )
-  check_api_exists()
-  if(model != "dall-e-2")
-    throw("model must be dall-e-2")
-  end
-  verbose ? println("Using $model") : true
+    check_api_exists()
+    if (model != "dall-e-2")
+        throw("model must be dall-e-2")
+    end
+    verbose ? println("Using $model") : true
 
-  isnothing(image) ? throw("`image` must not be nothing") : nothing
+    isnothing(image) ? throw("`image` must not be nothing") : nothing
 
-  parameter_list = Dict(
-    "prompt" => prompt_input,
-    "model" => model,
-    #"n" => n, # broken until replacement for HTTP form is found
-    "size" => size,
-    "image" => isnothing(image) ? image : open(image, "r"),
-    "mask" => isnothing(mask) ? mask : open(mask, "r"),
-    "response_format" => response_format
-  )
-    
-  deletenothingkeys!(parameter_list)    
-  body = HTTP.Form(collect(parameter_list))
-  headers = Dict(
-    "Authorization" => "Bearer $api_key",
-    #"Content-Type" => "application/json"
+    parameter_list = Dict(
+        "prompt" => prompt_input,
+        "model" => model,
+        #"n" => n, # broken until replacement for HTTP form is found
+        "size" => size,
+        "image" => isnothing(image) ? image : open(image, "r"),
+        "mask" => isnothing(mask) ? mask : open(mask, "r"),
+        "response_format" => response_format,
     )
 
-  
-    request_base = HTTP.request(
-      "POST",
-      url.edits,
-      headers=headers,
-      body=body
-    );
+    deletenothingkeys!(parameter_list)
+    body = HTTP.Form(collect(parameter_list))
+    headers = Dict(
+        "Authorization" => "Bearer $api_key",
+        #"Content-Type" => "application/json"
+    )
 
 
-  
-  # request_base.status
-  if request_base.status == 200
-    request_content = JSON.parse(String(request_base.body))
-  end
-  #
-  if n == 1
-    core_output = DataFrame(
-                   "n" => 1,
-                   "prompt" => prompt_input,
-                   "gpt" => request_content["data"][1]["url"]
-                   )
-  elseif n > 1
-    core_output = DataFrame(
-                   "n" => 1:n,
-                   "prompt" => fill(prompt_input, n),
-                   "gpt" => fill("", n)
-                   )
-    for i in 1:n
-      core_output.gpt[i] = request_content["data"][i]["url"]
+    request_base = HTTP.request("POST", url.edits, headers = headers, body = body)
+
+
+
+    # request_base.status
+    if request_base.status == 200
+        request_content = JSON.parse(String(request_base.body))
     end
-  end
+    #
+    if n == 1
+        core_output = DataFrame(
+            "n" => 1,
+            "prompt" => prompt_input,
+            "gpt" => request_content["data"][1]["url"],
+        )
+    elseif n > 1
+        core_output =
+            DataFrame("n" => 1:n, "prompt" => fill(prompt_input, n), "gpt" => fill("", n))
+        for i = 1:n
+            core_output.gpt[i] = request_content["data"][i]["url"]
+        end
+    end
 
-  meta_output = Dict(
-    "request_created" => request_content["created"],
-    "param_prompt" => prompt_input,
-    "param_size" => size,
-    "param_response_format" => response_format
-  )
+    meta_output = Dict(
+        "request_created" => request_content["created"],
+        "param_prompt" => prompt_input,
+        "param_size" => size,
+        "param_response_format" => response_format,
+    )
 
-  if output_type == "complete"
-    output = (core_output, meta_output)
-  elseif output_type == "meta"
-    output = meta_output
-  elseif output_type == "image"
-    output = core_output
-  end
-  return(output)
+    if output_type == "complete"
+        output = (core_output, meta_output)
+    elseif output_type == "meta"
+        output = meta_output
+    elseif output_type == "image"
+        output = core_output
+    end
+    return (output)
 end
 
-gpt_single_image_edit(;prompt_input="",
-n = 1,
-size = "256x256", # "512x512", "1024x1024"
-image = nothing,
-mask = nothing,
-response_format = "url", # "b64_json"
-output_type = "complete"
+gpt_single_image_edit(;
+    prompt_input = "",
+    n = 1,
+    size = "256x256", # "512x512", "1024x1024"
+    image = nothing,
+    mask = nothing,
+    response_format = "url", # "b64_json"
+    output_type = "complete",
 ) = gpt_single_image_edit(
-        prompt_input;
-        prompt_input=prompt_input,
-        n = n,
-        size = size, 
-        image = image,
-        mask = mask,
-        response_format = response_format,
-        output_type = output_type
-        )
-;
+    prompt_input;
+    prompt_input = prompt_input,
+    n = n,
+    size = size,
+    image = image,
+    mask = mask,
+    response_format = response_format,
+    output_type = output_type,
+);
